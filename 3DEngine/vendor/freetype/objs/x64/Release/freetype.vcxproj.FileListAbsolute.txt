@@ -1,0 +1,1 @@
+C:\Users\adamv\Downloads\freetype-2.13.2\freetype-2.13.2\objs\x64\Release\freetype.dll
