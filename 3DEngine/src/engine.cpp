@@ -148,7 +148,7 @@ void engine::ECSInit()
 
 	Entity directionalLight = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(directionalLight,
-							  directional_light(glm::vec3(1, -1, 0), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(0.65f, 0.6f, 0.3f), glm::vec3(0.72f, 0.7f, 0.6f), glm::vec3(1, 0.925f, 0.753f)));
+							  directional_light(glm::vec3(1, -1, -1), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(0.65f, 0.6f, 0.3f), glm::vec3(0.72f, 0.7f, 0.6f), glm::vec3(1, 0.925f, 0.753f)));
 
 	//
 	Entity pointLight2 = gCoordinator.CreateEntity();

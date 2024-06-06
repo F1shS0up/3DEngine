@@ -56,7 +56,7 @@ float DirectionalShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir)
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
     float currentDepth = projCoords.z;
     vec3 normal = normalize(Normal);
-    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0.0005);
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
@@ -125,7 +125,7 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     vec3 specular = light.specular * spec * texture(material.specularMap, TexCoords).rgb * material.specular;
 
     float shadow = DirectionalShadowCalculation(FragPosLightSpace, lightDir);                      
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular));     
+    vec3 lighting = vec3(ambient + (1.0 - shadow) * (diffuse + specular));     
     
     return lighting;
 }  
