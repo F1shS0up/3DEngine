@@ -17,6 +17,7 @@ struct material_lit : public material
 	glm::vec3 specular = glm::vec3(1.f);
 	class texture2D* specularMap = nullptr;
 	float shininess = 1.0f;
+	class texture2D* normalMap = nullptr;
 };
 struct material_unlit : public material
 {

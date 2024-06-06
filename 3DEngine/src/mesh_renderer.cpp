@@ -16,8 +16,21 @@ void material_lit::Init(shader* s)
 {
 	s->SetInteger("material.diffuseMap", 0, true);
 	s->SetInteger("material.specularMap", 1, true);
-	s->SetInteger("shadowMap", 2, true);
-	s->SetInteger("cubeArray", 3, true);
+	s->SetInteger("material.normalMap", 2, true);
+	s->SetInteger("shadowMap", 3, true);
+	s->SetInteger("cubeArray", 4, true);
+	if (diffuseMap == nullptr)
+	{
+		diffuseMap = resource_manager::GetTexture("DEFAULT");
+	}
+	if (specularMap == nullptr)
+	{
+		specularMap = resource_manager::GetTexture("DEFAULT");
+	}
+	if (normalMap == nullptr)
+	{
+		normalMap = resource_manager::GetTexture("DEFAULT_NORMAL_MAP");
+	}
 }
 
 void material_lit::Set(shader* s)
@@ -30,6 +43,8 @@ void material_lit::Set(shader* s)
 	diffuseMap->Bind();
 	glActiveTexture(GL_TEXTURE1);
 	specularMap->Bind();
+	glActiveTexture(GL_TEXTURE2);
+	normalMap->Bind();
 }
 
 void material_unlit::Init(shader* s)

@@ -61,12 +61,13 @@ void engine::Init()
 
 	// m = new model(new mesh((assetPath + "Models/backpack.obj").c_str()), transform(glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
 	resource_manager::LoadTexture((assetPath + "Engine/Textures/white.png").c_str(), "DEFAULT", false);
+	resource_manager::LoadTexture((assetPath + "Engine/Textures/defaultNormalMap.png").c_str(), "DEFAULT_NORMAL_MAP", false);
 	resource_manager::LoadTexture((assetPath + "Models/Backpack/diffuse.png").c_str(), "diffuse", false);
 	resource_manager::LoadTexture((assetPath + "Models/Backpack/specular.jpg").c_str(), "specular", false);
 	resource_manager::LoadShader((assetPath + "Shaders/3Dtest.vert").c_str(), (assetPath + "Shaders/3Dtest.frag").c_str(), nullptr, "3Dtest");
-	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default.frag").c_str(), nullptr, "default");
-	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_unlit.frag").c_str(), nullptr, "default_unlit");
-	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_lit.frag").c_str(), nullptr, "default_lit");
+	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default.frag").c_str(), (assetPath + "Shaders/default.geom").c_str(), "default");
+	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_unlit.frag").c_str(), (assetPath + "Shaders/default.geom").c_str(), "default_unlit");
+	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_lit.frag").c_str(), (assetPath + "Shaders/default.geom").c_str(), "default_lit");
 	resource_manager::LoadShader((assetPath + "Shaders/directional_light_depth.vert").c_str(), (assetPath + "Shaders/directional_light_depth.frag").c_str(), nullptr, "DIRECTIONAL_SHADOW_MAPPING");
 	resource_manager::LoadShader((assetPath + "Shaders/point_light_depth.vert").c_str(), (assetPath + "Shaders/point_light_depth.frag").c_str(), (assetPath + "Shaders/point_light_depth.geom").c_str(),
 								 "POINT_SHADOW_MAPPING");
@@ -92,8 +93,6 @@ void engine::ECSInit()
 
 	RegisterSystems();
 	material_lit* mat = new material_lit();
-	mat->diffuseMap = resource_manager::GetTexture("DEFAULT");
-	mat->specularMap = resource_manager::GetTexture("DEFAULT");
 	mat->shininess = 1.0f;
 	material_lit* matBackpack = new material_lit();
 	matBackpack->diffuseMap = resource_manager::GetTexture("diffuse");
@@ -101,13 +100,11 @@ void engine::ECSInit()
 	matBackpack->shininess = 1.0f;
 
 	material_lit* noShine = new material_lit();
-	noShine->diffuseMap = resource_manager::GetTexture("DEFAULT");
-	noShine->specularMap = resource_manager::GetTexture("DEFAULT");
 	noShine->shininess = 0.0f;
 	noShine->specular = glm::vec3(0.2f);
 
 	Entity e = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e, transform {glm::vec3(0, 1, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(e, transform {glm::vec3(0, 1, 2), glm::vec3(0, 30, 0), glm::vec3(1, 1, 1)});
 	gCoordinator.AddComponent(e, mesh_renderer {resource_manager::GetMesh("box"), mat, resource_manager::GetShader("default_lit")});
 	Entity e2 = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(e2, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});

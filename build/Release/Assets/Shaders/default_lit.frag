@@ -8,6 +8,7 @@ struct Material {
     vec3 specular;   
     sampler2D specularMap;
     float shininess;
+    sampler2D normalMap;
 }; 
 
 struct PointLight {
@@ -38,6 +39,7 @@ struct DirLight {
 in vec2 TexCoords;
 in vec3 FragPos;  
 in vec3 Normal;  
+in mat3 TBN;
 in vec4 FragPosLightSpace;
   
 uniform vec3 viewPos;
@@ -46,8 +48,8 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[8];
 uniform int pointLightCount;
 
-layout(binding = 2)uniform sampler2D shadowMap;
-layout(binding = 3)uniform samplerCubeArray cubeArray;
+layout(binding = 3)uniform sampler2D shadowMap;
+layout(binding = 4)uniform samplerCubeArray cubeArray;
 
 float DirectionalShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir)
 {
@@ -56,7 +58,7 @@ float DirectionalShadowCalculation(vec4 fragPosLightSpace, vec3 lightDir)
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
     float currentDepth = projCoords.z;
     vec3 normal = normalize(Normal);
-    float bias = max(0.0005 * (1.0 - dot(normal, lightDir)), 0.0005);
+    float bias = max(0.002 * (1.0 - dot(normal, lightDir)), 0.002);
 
     float shadow = 0.0;
     vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
@@ -157,9 +159,11 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, i
 
 void main()
 {
+    vec3 tangentViewPos = viewPos;
+    vec3 tangentFragPos = FragPos;
     // properties
     vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir = normalize(tangentViewPos - tangentFragPos);
 
     // phase 1: Directional lighting
     vec3 result = CalcDirLight(dirLight, norm, viewDir);

@@ -39,7 +39,7 @@ void point_light_manager::Init()
 void point_light_manager::SetShaderVariables()
 {
 	resource_manager::GetShader("default_lit")->SetInteger("pointLightCount", mEntities.size(), true);
-	glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE4);
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, SHADOW_MAP_ARRAY);
 
 	int index = 0;
@@ -174,7 +174,7 @@ void directional_light_manager::SetShaderVariables()
 		resource_manager::GetShader("default_lit")->SetInteger("dirLight.castShadows", light.castShadows);
 		resource_manager::GetShader("default_lit")->SetFloat("dirLight.farPlane", light.farPlane);
 		resource_manager::GetShader("default_lit")->SetVector3f("dirLight.position", light.position);
-		glActiveTexture(GL_TEXTURE2);
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, DIRECTIONAL_DEPTH_MAP);
 		return;
 	}

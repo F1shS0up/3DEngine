@@ -43,7 +43,7 @@ struct point_light
 	glm::vec3 specular = glm::vec3(1.0f);
 
 	int shadowMapLevel;
-	float near = 1, far = 100;
+	float near = .1f, far = 100;
 };
 struct point_light_manager : public System
 {
