@@ -17,6 +17,7 @@ void material_lit::Init(shader* s)
 	s->SetInteger("material.diffuseMap", 0, true);
 	s->SetInteger("material.specularMap", 1, true);
 	s->SetInteger("shadowMap", 2, true);
+	s->SetInteger("cubeArray", 3, true);
 }
 
 void material_lit::Set(shader* s)

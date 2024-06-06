@@ -68,8 +68,6 @@ public:
 private:
 	static const unsigned int TEXTURE_COUNT = 2;
 	unsigned int FBO, DEPTH, TEX[TEXTURE_COUNT];
-	unsigned int DIRECTIONAL_DEPTH_FBO, DIRECTIONAL_DEPTH_MAP;
-	int SHADOW_MAP_WIDTH_DIR = 16384, SHADOW_MAP_HEIGHT_DIR = 16384;
 
 	unsigned int VAO, VBO;
 };

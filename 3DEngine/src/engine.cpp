@@ -72,8 +72,10 @@ void engine::Init()
 								 "POINT_SHADOW_MAPPING");
 	resource_manager::LoadMesh((assetPath + "Models/backpack.obj").c_str(), "backpack");
 	resource_manager::LoadMesh((assetPath + "Models/untitled.obj").c_str(), "untitled");
+	resource_manager::LoadMesh((assetPath + "Models/box.obj").c_str(), "box");
 	resource_manager::LoadMesh((assetPath + "Engine/sphere.obj").c_str(), "SPHERE");
 	resource_manager::LoadMesh((assetPath + "Engine/plane.obj").c_str(), "PLANE");
+	resource_manager::LoadMesh((assetPath + "Models/selfShadowTest.obj").c_str(), "selfShadowTest");
 
 	ECSInit();
 }
@@ -93,16 +95,29 @@ void engine::ECSInit()
 	mat->diffuseMap = resource_manager::GetTexture("DEFAULT");
 	mat->specularMap = resource_manager::GetTexture("DEFAULT");
 	mat->shininess = 1.0f;
+	material_lit* matBackpack = new material_lit();
+	matBackpack->diffuseMap = resource_manager::GetTexture("diffuse");
+	matBackpack->specularMap = resource_manager::GetTexture("specular");
+	matBackpack->shininess = 1.0f;
+
+	material_lit* noShine = new material_lit();
+	noShine->diffuseMap = resource_manager::GetTexture("DEFAULT");
+	noShine->specularMap = resource_manager::GetTexture("DEFAULT");
+	noShine->shininess = 0.0f;
+	noShine->specular = glm::vec3(0.2f);
 
 	Entity e = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e, transform {glm::vec3(0, 0, 10), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	gCoordinator.AddComponent(e, mesh_renderer {resource_manager::GetMesh("SPHERE"), mat, resource_manager::GetShader("default_lit")});
+	gCoordinator.AddComponent(e, transform {glm::vec3(0, 1, 2), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(e, mesh_renderer {resource_manager::GetMesh("box"), mat, resource_manager::GetShader("default_lit")});
 	Entity e2 = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(e2, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
-	gCoordinator.AddComponent(e2, mesh_renderer {resource_manager::GetMesh("PLANE"), mat, resource_manager::GetShader("default_lit")});
-	// Entity e3 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e3, transform {glm::vec3(10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	gCoordinator.AddComponent(e2, mesh_renderer {resource_manager::GetMesh("PLANE"), noShine, resource_manager::GetShader("default_lit")});
+	Entity e3 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 8, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
+	Entity e4 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(e4, transform {glm::vec3(4, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
 	// Entity e4 = gCoordinator.CreateEntity();
 	// gCoordinator.AddComponent(e4, transform {glm::vec3(-10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
 	// gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
@@ -132,17 +147,18 @@ void engine::ECSInit()
 	blueMat->ambient = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	Entity directionalLight = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(directionalLight, directional_light(glm::vec3(0.5f, -1, -.1f), 1.f, 100.f, 100.f, glm::vec3(.1f), glm::vec3(0.5f), glm::vec3(1)));
+	gCoordinator.AddComponent(directionalLight,
+							  directional_light(glm::vec3(1, -1, 0), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(0.65f, 0.6f, 0.3f), glm::vec3(0.72f, 0.7f, 0.6f), glm::vec3(1, 0.925f, 0.753f)));
 
-	Entity pointLight = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(pointLight, transform {glm::vec3(-1, 0, 8), glm::vec3(0, 0, 0), glm::vec3(.2f)});
-	gCoordinator.AddComponent(pointLight, point_light {1.0f, 0.09f, 0.032f, glm::vec3(0, 0, 0.1f), glm::vec3(0, 0, 0.5f), glm::vec3(0, 0, 1)});
-	gCoordinator.AddComponent(pointLight, mesh_renderer {resource_manager::GetMesh("SPHERE"), blueMat, resource_manager::GetShader("default_unlit")});
 	//
-	// Entity pointLight2 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(pointLight2, transform {glm::vec3(2, 0, 9), glm::vec3(0, 0, 0), glm::vec3(.2f)});
-	// gCoordinator.AddComponent(pointLight2, point_light {1.0f, 0.09f, 0.032f, glm::vec3(0, 0.1f, 0), glm::vec3(0, 0.5f, 0), glm::vec3(0, 1, 0)});
-	// gCoordinator.AddComponent(pointLight2, mesh_renderer {resource_manager::GetMesh("SPHERE"), greenMat, resource_manager::GetShader("default_unlit")});
+	Entity pointLight2 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(pointLight2, transform {glm::vec3(1, 1, 0), glm::vec3(0, 0, 0), glm::vec3(.2f)});
+	gCoordinator.AddComponent(pointLight2, point_light {1.0f, 0.09f, 0.032f, 1.f, true, glm::vec3(0, 0, 0.1f), glm::vec3(0, 0, 0.5f), glm::vec3(0, 0, 1)});
+	gCoordinator.AddComponent(pointLight2, mesh_renderer {resource_manager::GetMesh("SPHERE"), blueMat, resource_manager::GetShader("default_unlit")});
+
+	pointLightManager->Init();
+	meshRendererSystem->Init();
+	directionalLightManager->Init();
 }
 
 void engine::RegisterSystems()
@@ -181,7 +197,6 @@ void engine::Update()
 	std::cout << "FPS: " << 1.f / deltaTime << std::endl;
 	fpsCameraSystem->Update(deltaTime);
 	cameraMovementSystem->Update(deltaTime);
-	pointLightManager->Update();
 }
 
 void engine::Render()
@@ -189,31 +204,20 @@ void engine::Render()
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glm::mat4 lightSpaceMatrix = directionalLightManager->GetLightSpaceMatrix();
-	// render scene from light's point of view
-	resource_manager::GetShader("DIRECTIONAL_SHADOW_MAPPING")->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix, true);
-	resource_manager::GetShader("default_lit")->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix, true);
-	resource_manager::GetShader("default_unlit")->SetMatrix4("lightSpaceMatrix", lightSpaceMatrix, true);
+	directionalLightManager->SetLightSpaceMatrix();
 
-	glViewport(0, 0, SHADOW_MAP_WIDTH_DIR, SHADOW_MAP_HEIGHT_DIR);
-	glBindFramebuffer(GL_FRAMEBUFFER, DIRECTIONAL_DEPTH_FBO);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	meshRendererSystem->RenderUsingShader(resource_manager::GetShader("DIRECTIONAL_SHADOW_MAPPING"));
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	directionalLightManager->RenderFromLightsPOV();
 
 	pointLightManager->RenderFromLightsPOV();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	glClearColor(.25f, .25f, .25f, 0);
+	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, cameraSystem.GetCurrentCamera()->outputWidth, cameraSystem.GetCurrentCamera()->outputHeight);
 
+	directionalLightManager->SetShaderVariables();
+	pointLightManager->SetShaderVariables();
 	SetShaderVariables();
-
-	resource_manager::GetShader("default_lit")->SetVector3f("dirLight.ambient", glm::vec3(0.15f, 0.15f, 0.09f), true);
-	resource_manager::GetShader("default_lit")->SetVector3f("dirLight.diffuse", glm::vec3(0.6f, 0.4f, 0.05f));
-	resource_manager::GetShader("default_lit")->SetVector3f("dirLight.specular", glm::vec3(1.0f, 1.0f, .9f));
-	resource_manager::GetShader("default_lit")->SetVector3f("dirLight.direction", glm::vec3(0, -1, 0));
 	meshRendererSystem->Render();
 	// m->t.rotation = glm::vec3(0, glm::radians((float)counter), 0);
 	// m->Render(resource_manager::GetShader("default"));
@@ -232,8 +236,6 @@ void engine::SetShaderVariables()
 	resource_manager::GetShader("default_lit")->SetMatrix4("view", cameraSystem.GetCurrentCamera()->GetViewMatrix(), true);
 	resource_manager::GetShader("default_lit")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
 	resource_manager::GetShader("default_lit")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->GetPosition());
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, DIRECTIONAL_DEPTH_MAP);
 
 	resource_manager::GetShader("default_unlit")->SetMatrix4("view", cameraSystem.GetCurrentCamera()->GetViewMatrix(), true);
 	resource_manager::GetShader("default_unlit")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
@@ -336,6 +338,8 @@ void engine::InitGL()
 	glfwSwapInterval(opt.vSync);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	glEnable(GL_CULL_FACE);
+
 	CreateFBO();
 }
 
@@ -383,24 +387,6 @@ void engine::CreateFBO()
 
 	unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
 	glDrawBuffers(2, attachments);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// DIRECTIONAL DEPTH FBO
-	glGenFramebuffers(1, &DIRECTIONAL_DEPTH_FBO);
-	glGenTextures(1, &DIRECTIONAL_DEPTH_MAP);
-	glBindTexture(GL_TEXTURE_2D, DIRECTIONAL_DEPTH_MAP);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_MAP_WIDTH_DIR, SHADOW_MAP_HEIGHT_DIR, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-	// attach depth texture as FBO's depth buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, DIRECTIONAL_DEPTH_FBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, DIRECTIONAL_DEPTH_MAP, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 void engine::UpdateResolution(int width, int height)
