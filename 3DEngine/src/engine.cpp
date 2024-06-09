@@ -8,6 +8,7 @@
 #include "mesh.h"
 #include "mesh_renderer.h"
 #include "resource_manager.h"
+#include "skybox.h"
 #include "stb_image.h"
 #include "transform.h"
 
@@ -24,6 +25,7 @@ std::shared_ptr<fps_camera_system> fpsCameraSystem;
 std::shared_ptr<camera_movement_system> cameraMovementSystem;
 std::shared_ptr<point_light_manager> pointLightManager;
 std::shared_ptr<directional_light_manager> directionalLightManager;
+std::shared_ptr<skybox_system> skyboxSystem;
 engine* engine::instance = nullptr;
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -56,7 +58,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 }
 void engine::Init()
 {
-	cameraSystem.CreateCamera(camera(3840, 2160, 1.f, 100.0f, 60.0f, glm::vec3(0, 0, 0), 0, -90));
+	cameraSystem.CreateCamera(camera(3840, 2160, .1f, 10000.0f, 60.0f, glm::vec3(0, 0, 0), 0, 90));
 	InitGL();
 
 	// m = new model(new mesh((assetPath + "Models/backpack.obj").c_str()), transform(glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
@@ -64,19 +66,24 @@ void engine::Init()
 	resource_manager::LoadTexture((assetPath + "Engine/Textures/defaultNormalMap.png").c_str(), "DEFAULT_NORMAL_MAP", false);
 	resource_manager::LoadTexture((assetPath + "Models/Backpack/diffuse.png").c_str(), "diffuse", false);
 	resource_manager::LoadTexture((assetPath + "Models/Backpack/specular.jpg").c_str(), "specular", false);
+
 	resource_manager::LoadShader((assetPath + "Shaders/3Dtest.vert").c_str(), (assetPath + "Shaders/3Dtest.frag").c_str(), nullptr, "3Dtest");
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default.frag").c_str(), (assetPath + "Shaders/default.geom").c_str(), "default");
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_unlit.frag").c_str(), (assetPath + "Shaders/default.geom").c_str(), "default_unlit");
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_lit.frag").c_str(), (assetPath + "Shaders/default.geom").c_str(), "default_lit");
+	resource_manager::LoadShader((assetPath + "Shaders/skybox.vert").c_str(), (assetPath + "Shaders/skybox.frag").c_str(), nullptr, "skybox");
 	resource_manager::LoadShader((assetPath + "Shaders/directional_light_depth.vert").c_str(), (assetPath + "Shaders/directional_light_depth.frag").c_str(), nullptr, "DIRECTIONAL_SHADOW_MAPPING");
 	resource_manager::LoadShader((assetPath + "Shaders/point_light_depth.vert").c_str(), (assetPath + "Shaders/point_light_depth.frag").c_str(), (assetPath + "Shaders/point_light_depth.geom").c_str(),
 								 "POINT_SHADOW_MAPPING");
+
 	resource_manager::LoadMesh((assetPath + "Models/backpack.obj").c_str(), "backpack");
 	resource_manager::LoadMesh((assetPath + "Models/untitled.obj").c_str(), "untitled");
 	resource_manager::LoadMesh((assetPath + "Models/box.obj").c_str(), "box");
 	resource_manager::LoadMesh((assetPath + "Engine/sphere.obj").c_str(), "SPHERE");
 	resource_manager::LoadMesh((assetPath + "Engine/plane.obj").c_str(), "PLANE");
 	resource_manager::LoadMesh((assetPath + "Models/selfShadowTest.obj").c_str(), "selfShadowTest");
+
+	resource_manager::LoadCubemap((assetPath + "Textures/skybox").c_str(), ".png", "skybox");
 
 	ECSInit();
 }
@@ -90,10 +97,11 @@ void engine::ECSInit()
 	gCoordinator.RegisterComponent<camera_movement>();
 	gCoordinator.RegisterComponent<point_light>();
 	gCoordinator.RegisterComponent<directional_light>();
+	gCoordinator.RegisterComponent<skybox>();
 
 	RegisterSystems();
 	material_lit* mat = new material_lit();
-	mat->shininess = 1.0f;
+	mat->shininess = 32.0f;
 	material_lit* matBackpack = new material_lit();
 	matBackpack->diffuseMap = resource_manager::GetTexture("diffuse");
 	matBackpack->specularMap = resource_manager::GetTexture("specular");
@@ -109,27 +117,27 @@ void engine::ECSInit()
 	Entity e2 = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(e2, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
 	gCoordinator.AddComponent(e2, mesh_renderer {resource_manager::GetMesh("PLANE"), noShine, resource_manager::GetShader("default_lit")});
-	Entity e3 = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 8, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
-	Entity e4 = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e4, transform {glm::vec3(4, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
+	// Entity e3 = gCoordinator.CreateEntity();
+	// gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 8, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	// gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
 	// Entity e4 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e4, transform {glm::vec3(-10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	// Entity e5 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e5, transform {glm::vec3(5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e5, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	// Entity e6 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e6, transform {glm::vec3(5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e6, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	// Entity e7 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e7, transform {glm::vec3(-5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e7, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	// Entity e8 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e8, transform {glm::vec3(-5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e8, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	// gCoordinator.AddComponent(e4, transform {glm::vec3(4, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	// gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
+	//  Entity e4 = gCoordinator.CreateEntity();
+	//  gCoordinator.AddComponent(e4, transform {glm::vec3(-10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//  gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//  Entity e5 = gCoordinator.CreateEntity();
+	//  gCoordinator.AddComponent(e5, transform {glm::vec3(5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//  gCoordinator.AddComponent(e5, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//  Entity e6 = gCoordinator.CreateEntity();
+	//  gCoordinator.AddComponent(e6, transform {glm::vec3(5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//  gCoordinator.AddComponent(e6, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//  Entity e7 = gCoordinator.CreateEntity();
+	//  gCoordinator.AddComponent(e7, transform {glm::vec3(-5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//  gCoordinator.AddComponent(e7, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//  Entity e8 = gCoordinator.CreateEntity();
+	//  gCoordinator.AddComponent(e8, transform {glm::vec3(-5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//  gCoordinator.AddComponent(e8, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
 
 	Entity fpsCamera = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(fpsCamera, fps_camera {cameraSystem.GetCurrentCamera()});
@@ -145,7 +153,10 @@ void engine::ECSInit()
 
 	Entity directionalLight = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(directionalLight,
-							  directional_light(glm::vec3(1, -1, -1), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(0.65f, 0.6f, 0.3f), glm::vec3(0.72f, 0.7f, 0.6f), glm::vec3(1, 0.925f, 0.753f)));
+							  directional_light(glm::vec3(0, -1, -.8f), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(0.01f, 0.01f, 0.1f), glm::vec3(0.19f, 0.23f, 0.4f), glm::vec3(.7f, 0.75f, 0.94f)));
+
+	Entity sky = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sky, skybox {resource_manager::GetCubemap("skybox")});
 
 	//
 	// Entity pointLight2 = gCoordinator.CreateEntity();
@@ -156,6 +167,7 @@ void engine::ECSInit()
 	pointLightManager->Init();
 	meshRendererSystem->Init();
 	directionalLightManager->Init();
+	skyboxSystem->Init();
 }
 
 void engine::RegisterSystems()
@@ -186,6 +198,11 @@ void engine::RegisterSystems()
 	sig.set(gCoordinator.GetComponentType<directional_light>());
 	gCoordinator.SetSystemSignature<directional_light_manager>(sig);
 	directionalLightManager = gCoordinator.RegisterSystem<directional_light_manager>();
+
+	sig = Signature();
+	sig.set(gCoordinator.GetComponentType<skybox>());
+	gCoordinator.SetSystemSignature<skybox_system>(sig);
+	skyboxSystem = gCoordinator.RegisterSystem<skybox_system>();
 }
 
 void engine::Update()
@@ -203,8 +220,8 @@ void engine::Render()
 
 	directionalLightManager->SetLightSpaceMatrix();
 
+	glCullFace(GL_BACK);
 	directionalLightManager->RenderFromLightsPOV();
-
 	pointLightManager->RenderFromLightsPOV();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -215,6 +232,7 @@ void engine::Render()
 	directionalLightManager->SetShaderVariables();
 	pointLightManager->SetShaderVariables();
 	SetShaderVariables();
+	skyboxSystem->Render();
 	meshRendererSystem->Render();
 	// m->t.rotation = glm::vec3(0, glm::radians((float)counter), 0);
 	// m->Render(resource_manager::GetShader("default"));
@@ -236,6 +254,9 @@ void engine::SetShaderVariables()
 
 	resource_manager::GetShader("default_unlit")->SetMatrix4("view", cameraSystem.GetCurrentCamera()->GetViewMatrix(), true);
 	resource_manager::GetShader("default_unlit")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
+
+	resource_manager::GetShader("skybox")->SetMatrix4("view", glm::mat4(glm::mat3(cameraSystem.GetCurrentCamera()->GetViewMatrix())), true);
+	resource_manager::GetShader("skybox")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
 }
 
 void engine::Terminate()

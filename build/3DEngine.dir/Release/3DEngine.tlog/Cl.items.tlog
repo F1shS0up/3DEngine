@@ -10,6 +10,7 @@ C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.cpp;C:\Users\adamv\Documents
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\mesh_renderer.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\resource_manager.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\shader.obj
+C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\skybox.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\stb_image.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\stb_image.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\texture.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\src\glad.c;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\glad.obj

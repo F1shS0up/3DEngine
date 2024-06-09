@@ -272,6 +272,7 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.cpp" />
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\stb_image.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.cpp" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.h" />
@@ -293,6 +294,7 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\options.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\transform.h" />
     <None Include="C:\Users\adamv\Documents\3DEngine\.gitignore">

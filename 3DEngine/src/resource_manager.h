@@ -20,6 +20,7 @@ public:
 	// resource storage
 	static std::map<std::string, shader> shaders;
 	static std::map<std::string, texture2D> textures;
+	static std::map<std::string, unsigned int> cubemaps;
 	static std::map<std::string, mesh> meshes;
 	// loads (and generates) a shader program from file loading vertex, fragment (and geometry)
 	// shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
@@ -30,10 +31,14 @@ public:
 	static texture2D* LoadTexture(const char* file, std::string name, bool alpha = true);
 	// retrieves a stored texture
 	static texture2D* GetTexture(std::string name);
-	// properly de-allocates all loaded resources
+
 	static mesh* LoadMesh(const char* file, std::string name);
-	// retrieves a stored texture
 	static mesh* GetMesh(std::string name);
+
+	static unsigned int LoadCubemap(std::string folder, std::string extension, std::string name);
+	static unsigned int LoadCubemap(std::vector<std::string> faces, std::string name);
+	static unsigned int GetCubemap(std::string name);
+
 	// properly de-allocates all loaded resources
 	static void Clear();
 
@@ -45,6 +50,8 @@ private:
 	static shader loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
 	// loads a single texture from file
 	static texture2D loadTextureFromFile(const char* file, bool alpha);
+
+	static unsigned int loadCubemap(std::vector<std::string> faces);
 };
 
 #endif
