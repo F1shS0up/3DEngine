@@ -12,6 +12,8 @@ bool mesh::LoadOBJ(const char* path, std::vector<vertex>& vertices)
 	std::vector<glm::vec3> temp_vertices;
 	std::vector<glm::vec2> temp_uvs;
 	std::vector<glm::vec3> temp_normals;
+	std::vector<glm::vec3> temp_tangents;
+	std::vector<glm::vec3> temp_bitangents;
 	FILE* file = fopen(path, "r");
 	if (file == NULL)
 	{
@@ -33,6 +35,8 @@ bool mesh::LoadOBJ(const char* path, std::vector<vertex>& vertices)
 			glm::vec3 vertex;
 			fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
 			temp_vertices.push_back(vertex);
+			temp_tangents.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+			temp_bitangents.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 		}
 		else if (strcmp(lineHeader, "vt") == 0)
 		{
@@ -65,6 +69,40 @@ bool mesh::LoadOBJ(const char* path, std::vector<vertex>& vertices)
 			normalIndices.push_back(normalIndex[0]);
 			normalIndices.push_back(normalIndex[1]);
 			normalIndices.push_back(normalIndex[2]);
+
+			// Calculate Tangents and Bitangents
+			glm::vec3& v0 = temp_vertices[vertexIndex[0] - 1];
+			glm::vec3& v1 = temp_vertices[vertexIndex[1] - 1];
+			glm::vec3& v2 = temp_vertices[vertexIndex[2] - 1];
+
+			// Shortcuts for UVs
+			glm::vec2& uv0 = temp_uvs[uvIndex[0] - 1];
+			glm::vec2& uv1 = temp_uvs[uvIndex[1] - 1];
+			glm::vec2& uv2 = temp_uvs[uvIndex[2] - 1];
+
+			// Edges of the triangle : position delta
+			glm::vec3 deltaPos1 = v1 - v0;
+			glm::vec3 deltaPos2 = v2 - v0;
+
+			// UV delta
+			glm::vec2 deltaUV1 = uv1 - uv0;
+			glm::vec2 deltaUV2 = uv2 - uv0;
+
+			if (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x == 0.0f)
+			{
+				std::cout << "Degenerate Triangle" << std::endl;
+			}
+
+			float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
+			glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
+			glm::vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x) * r;
+
+			temp_tangents[vertexIndex[0] - 1] += tangent;
+			temp_tangents[vertexIndex[1] - 1] += tangent;
+			temp_tangents[vertexIndex[2] - 1] += tangent;
+			temp_bitangents[vertexIndex[0] - 1] += bitangent;
+			temp_bitangents[vertexIndex[1] - 1] += bitangent;
+			temp_bitangents[vertexIndex[2] - 1] += bitangent;
 		}
 	}
 	int verticesCount = vertexIndices.size();
@@ -73,7 +111,7 @@ bool mesh::LoadOBJ(const char* path, std::vector<vertex>& vertices)
 		unsigned int vertexIndex = vertexIndices[i];
 		unsigned int uvIndex = uvIndices[i];
 		unsigned int normalIndex = normalIndices[i];
-		vertices.push_back(vertex(temp_vertices[vertexIndex - 1], temp_uvs[uvIndex - 1], temp_normals[normalIndex - 1]));
+		vertices.push_back(vertex(temp_vertices[vertexIndex - 1], temp_uvs[uvIndex - 1], temp_normals[normalIndex - 1], temp_tangents[vertexIndex - 1], temp_bitangents[vertexIndex - 1]));
 	}
 }
 
@@ -84,12 +122,16 @@ void mesh::InitRenderData()
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(5 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(5 * sizeof(float)));
 	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(8 * sizeof(float)));
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
+	glEnableVertexAttribArray(4);
 }
 
 void mesh::Render(shader* s)

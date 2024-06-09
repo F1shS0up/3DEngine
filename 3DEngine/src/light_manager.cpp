@@ -38,8 +38,8 @@ void point_light_manager::Init()
 }
 void point_light_manager::SetShaderVariables()
 {
-	resource_manager::GetShader("default_lit")->SetInteger("pointLightCount", mEntities.size(), true);
-	glActiveTexture(GL_TEXTURE4);
+	resource_manager::GetShader("default_lit")->SetInteger("lightCount", mEntities.size() + 1, true); // +1 for directional light
+	glActiveTexture(GL_TEXTURE6);
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, SHADOW_MAP_ARRAY);
 
 	int index = 0;
@@ -48,7 +48,7 @@ void point_light_manager::SetShaderVariables()
 		point_light& light = gCoordinator.GetComponent<point_light>(entity);
 		transform& t = gCoordinator.GetComponent<transform>(entity);
 		shader* s = resource_manager::GetShader("default_lit");
-		std::string name = "pointLights[" + std::to_string(index) + "].";
+		std::string name = "lights[" + std::to_string(index + 1) + "].";
 		SetShaderPerLightVariables(s, name, light, t);
 		index++;
 	}
@@ -72,13 +72,7 @@ void point_light_manager::RenderFromLightsPOV()
 void point_light_manager::SetShaderPerLightVariables(shader* s, std::string& name, point_light& light, transform& t)
 {
 	s->SetVector3f((name + "position").c_str(), t.position, true);
-	s->SetVector3f((name + "ambient").c_str(), light.ambient * light.lightStrength);
-	s->SetVector3f((name + "diffuse").c_str(), light.diffuse * light.lightStrength);
-	s->SetVector3f((name + "specular").c_str(), light.specular * light.lightStrength);
-
-	s->SetFloat((name + "constant").c_str(), 1.0f);
-	s->SetFloat((name + "linear").c_str(), 0.09f);
-	s->SetFloat((name + "quadratic").c_str(), 0.032f);
+	s->SetVector3f((name + "color").c_str(), light.color * light.lightStrength);
 
 	s->SetFloat((name + "farPlane").c_str(), light.far);
 	s->SetInteger((name + "castShadows").c_str(), light.castShadows);
@@ -103,9 +97,8 @@ void point_light_manager::SetDepthShaderVariables(point_light& light, transform&
 	resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetInteger("cubemapIndex", light.shadowMapLevel);
 }
 
-directional_light::directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows, glm::vec3 ambient, glm::vec3 diffuse,
-									 glm::vec3 specular) :
-	nearPlane(nearPlane), farPlane(farPlane), ambient(ambient), diffuse(diffuse), specular(specular), range(range), lightStrength(lightStrength), castShadows(castShadows)
+directional_light::directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows, glm::vec3 color) :
+	nearPlane(nearPlane), farPlane(farPlane), color(color), range(range), lightStrength(lightStrength), castShadows(castShadows)
 {
 	this->direction = glm::normalize(direction);
 	position = -this->direction * farPlane / 2.f;
@@ -167,14 +160,11 @@ void directional_light_manager::SetShaderVariables()
 	for (const auto& entity : mEntities)
 	{
 		auto& light = gCoordinator.GetComponent<directional_light>(entity);
-		resource_manager::GetShader("default_lit")->SetVector3f("dirLight.ambient", light.ambient * light.lightStrength, true);
-		resource_manager::GetShader("default_lit")->SetVector3f("dirLight.diffuse", light.diffuse * light.lightStrength);
-		resource_manager::GetShader("default_lit")->SetVector3f("dirLight.specular", light.specular * light.lightStrength);
-		resource_manager::GetShader("default_lit")->SetVector3f("dirLight.direction", light.direction);
-		resource_manager::GetShader("default_lit")->SetInteger("dirLight.castShadows", light.castShadows);
-		resource_manager::GetShader("default_lit")->SetFloat("dirLight.farPlane", light.farPlane);
-		resource_manager::GetShader("default_lit")->SetVector3f("dirLight.position", light.position);
-		glActiveTexture(GL_TEXTURE3);
+		resource_manager::GetShader("default_lit")->SetVector3f("lights[0].color", light.color * light.lightStrength, true);
+		resource_manager::GetShader("default_lit")->SetVector3f("lights[0].position", -light.direction * 10000.f);
+		resource_manager::GetShader("default_lit")->SetInteger("lights[0].castShadows", light.castShadows);
+		resource_manager::GetShader("default_lit")->SetFloat("lights[0].farPlane", light.farPlane);
+		glActiveTexture(GL_TEXTURE5);
 		glBindTexture(GL_TEXTURE_2D, DIRECTIONAL_DEPTH_MAP);
 		return;
 	}

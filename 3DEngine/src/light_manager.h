@@ -15,32 +15,23 @@
 struct directional_light
 {
 	directional_light() = default;
-	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows = true, glm::vec3 ambient = glm::vec3(0.15f, 0.15f, 0.09f),
-					  glm::vec3 diffuse = glm::vec3(0.6f, 0.4f, 0.05f), glm::vec3 specular = glm::vec3(1.0f, 1.0f, .9f));
+	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows = true, glm::vec3 color = glm::vec3(0.15f, 0.15f, 0.09f));
 	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
 	float nearPlane, farPlane;
 	float range = 10.0f;
 	float lightStrength; // multiplier
 	bool castShadows = true;
 
-	glm::vec3 ambient = glm::vec3(0.15f, 0.15f, 0.09f);
-	glm::vec3 diffuse = glm::vec3(0.6f, 0.4f, 0.05f);
-	glm::vec3 specular = glm::vec3(1.0f, 1.0f, .9f);
+	glm::vec3 color = glm::vec3(0.15f, 0.15f, 0.09f);
 
 	glm::mat4 view;
 	glm::vec3 position;
 };
 struct point_light
 {
-	float constant;
-	float linear;
-	float quadratic;
 	float lightStrength; // multiplier
 	bool castShadows = true;
-
-	glm::vec3 ambient = glm::vec3(0.1f);
-	glm::vec3 diffuse = glm::vec3(0.5f);
-	glm::vec3 specular = glm::vec3(1.0f);
+	glm::vec3 color = glm::vec3(0.1f);
 
 	int shadowMapLevel;
 	float near = .1f, far = 100;

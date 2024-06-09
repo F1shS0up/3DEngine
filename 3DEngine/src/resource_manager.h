@@ -28,7 +28,7 @@ public:
 	// retrieves a stored sader
 	static shader* GetShader(std::string name);
 	// loads (and generates) a texture from file
-	static texture2D* LoadTexture(const char* file, std::string name, bool alpha = true);
+	static texture2D* LoadTexture(const char* file, std::string name, bool repeat = false);
 	// retrieves a stored texture
 	static texture2D* GetTexture(std::string name);
 
@@ -49,7 +49,7 @@ private:
 	// loads and generates a shader from file
 	static shader loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
 	// loads a single texture from file
-	static texture2D loadTextureFromFile(const char* file, bool alpha);
+	static texture2D loadTextureFromFile(const char* file, bool repeat = false);
 
 	static unsigned int loadCubemap(std::vector<std::string> faces);
 };

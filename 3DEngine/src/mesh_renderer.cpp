@@ -14,18 +14,26 @@ extern Coordinator gCoordinator;
 
 void material_lit::Init(shader* s)
 {
-	s->SetInteger("material.diffuseMap", 0, true);
-	s->SetInteger("material.specularMap", 1, true);
-	s->SetInteger("material.normalMap", 2, true);
-	s->SetInteger("shadowMap", 3, true);
-	s->SetInteger("cubeArray", 4, true);
-	if (diffuseMap == nullptr)
+	s->SetInteger("material.albedoMap", 0, true);
+	s->SetInteger("material.normalMap", 1);
+	s->SetInteger("material.metallicMap", 2);
+	s->SetInteger("material.roughnessMap", 3);
+	s->SetInteger("material.aoMap", 4);
+	if (albedoMap == nullptr)
 	{
-		diffuseMap = resource_manager::GetTexture("DEFAULT");
+		albedoMap = resource_manager::GetTexture("DEFAULT");
 	}
-	if (specularMap == nullptr)
+	if (metallicMap == nullptr)
 	{
-		specularMap = resource_manager::GetTexture("DEFAULT");
+		metallicMap = resource_manager::GetTexture("DEFAULT");
+	}
+	if (roughnessMap == nullptr)
+	{
+		roughnessMap = resource_manager::GetTexture("DEFAULT");
+	}
+	if (aoMap == nullptr)
+	{
+		aoMap = resource_manager::GetTexture("DEFAULT");
 	}
 	if (normalMap == nullptr)
 	{
@@ -35,16 +43,20 @@ void material_lit::Init(shader* s)
 
 void material_lit::Set(shader* s)
 {
-	s->SetVector3f("material.ambient", ambient, true);
-	s->SetVector3f("material.diffuse", diffuse, true);
-	s->SetVector3f("material.specular", specular, true);
-	s->SetFloat("material.shininess", shininess, true);
+	s->SetFloat("uvMultiplier", uvMultiplier, true);
+	s->SetVector3f("material.albedo", albedo);
+	s->SetFloat("material.metallic", metallic);
+	s->SetFloat("material.roughness", roughness);
 	glActiveTexture(GL_TEXTURE0);
-	diffuseMap->Bind();
+	albedoMap->Bind();
 	glActiveTexture(GL_TEXTURE1);
-	specularMap->Bind();
-	glActiveTexture(GL_TEXTURE2);
 	normalMap->Bind();
+	glActiveTexture(GL_TEXTURE2);
+	metallicMap->Bind();
+	glActiveTexture(GL_TEXTURE3);
+	roughnessMap->Bind();
+	glActiveTexture(GL_TEXTURE4);
+	aoMap->Bind();
 }
 
 void material_unlit::Init(shader* s)
@@ -54,7 +66,8 @@ void material_unlit::Init(shader* s)
 
 void material_unlit::Set(shader* s)
 {
-	s->SetVector3f("material.ambient", ambient, true);
+	s->SetFloat("uvMultiplier", uvMultiplier, true);
+	s->SetVector3f("material.ambient", ambient);
 	glActiveTexture(GL_TEXTURE0);
 	map->Bind();
 }

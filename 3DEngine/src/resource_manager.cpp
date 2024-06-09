@@ -33,10 +33,10 @@ shader* resource_manager::GetShader(std::string name)
 	return &shaders[name];
 }
 
-texture2D* resource_manager::LoadTexture(const char* file, std::string name, bool alpha)
+texture2D* resource_manager::LoadTexture(const char* file, std::string name, bool repeat)
 {
 	if (textures.find(name) != textures.end()) std::cout << "Texture already exists: " << name << std::endl;
-	textures[name] = loadTextureFromFile(file, alpha);
+	textures[name] = loadTextureFromFile(file, repeat);
 	return &textures[name];
 }
 
@@ -134,19 +134,34 @@ shader resource_manager::loadShaderFromFile(const char* vShaderFile, const char*
 	return shader;
 }
 
-texture2D resource_manager::loadTextureFromFile(const char* file, bool alpha)
+texture2D resource_manager::loadTextureFromFile(const char* file, bool repeat)
 {
 	// create texture object
 	texture2D texture;
-	if (alpha)
+	if (repeat)
 	{
-		texture.Internal_Format = GL_RGBA;
-		texture.Image_Format = GL_RGBA;
+		texture.Wrap_S = GL_REPEAT;
+		texture.Wrap_T = GL_REPEAT;
 	}
 	// load image
 	stbi_set_flip_vertically_on_load(false);
 	int width, height, nrChannels;
 	unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
+	if (nrChannels == 4)
+	{
+		texture.Internal_Format = GL_RGBA;
+		texture.Image_Format = GL_RGBA;
+	}
+	else if (nrChannels == 3)
+	{
+		texture.Internal_Format = GL_RGB;
+		texture.Image_Format = GL_RGB;
+	}
+	else
+	{
+		texture.Internal_Format = GL_RED;
+		texture.Image_Format = GL_RED;
+	}
 	// now generate texture
 	texture.Generate(width, height, data);
 	// and finally free image data
