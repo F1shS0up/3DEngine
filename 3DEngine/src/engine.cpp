@@ -97,7 +97,7 @@ void engine::ECSInit()
 	material_lit* matBackpack = new material_lit();
 	matBackpack->diffuseMap = resource_manager::GetTexture("diffuse");
 	matBackpack->specularMap = resource_manager::GetTexture("specular");
-	matBackpack->shininess = 1.0f;
+	matBackpack->shininess = 32.0f;
 
 	material_lit* noShine = new material_lit();
 	noShine->shininess = 0.0f;
@@ -148,10 +148,10 @@ void engine::ECSInit()
 							  directional_light(glm::vec3(1, -1, -1), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(0.65f, 0.6f, 0.3f), glm::vec3(0.72f, 0.7f, 0.6f), glm::vec3(1, 0.925f, 0.753f)));
 
 	//
-	Entity pointLight2 = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(pointLight2, transform {glm::vec3(1, 1, 0), glm::vec3(0, 0, 0), glm::vec3(.2f)});
-	gCoordinator.AddComponent(pointLight2, point_light {1.0f, 0.09f, 0.032f, 1.f, true, glm::vec3(0, 0, 0.1f), glm::vec3(0, 0, 0.5f), glm::vec3(0, 0, 1)});
-	gCoordinator.AddComponent(pointLight2, mesh_renderer {resource_manager::GetMesh("SPHERE"), blueMat, resource_manager::GetShader("default_unlit")});
+	// Entity pointLight2 = gCoordinator.CreateEntity();
+	// gCoordinator.AddComponent(pointLight2, transform {glm::vec3(1, 1, 0), glm::vec3(0, 0, 0), glm::vec3(.2f)});
+	// gCoordinator.AddComponent(pointLight2, point_light {1.0f, 0.09f, 0.032f, 1.f, true, glm::vec3(0, 0, 0.1f), glm::vec3(0, 0, 0.5f), glm::vec3(0, 0, 1)});
+	// gCoordinator.AddComponent(pointLight2, mesh_renderer {resource_manager::GetMesh("SPHERE"), blueMat, resource_manager::GetShader("default_unlit")});
 
 	pointLightManager->Init();
 	meshRendererSystem->Init();
