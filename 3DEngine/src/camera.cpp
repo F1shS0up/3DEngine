@@ -16,6 +16,7 @@ camera::camera(int outputWidth, int outputHeight, float nearPlane, float farPlan
 {
 	UpdateCameraVectors();
 	projection = glm::perspective(glm::radians(fov), (float)outputWidth / (float)outputHeight, nearPlane, farPlane);
+	aspectRatio = (float)outputWidth / (float)outputHeight;
 }
 
 void camera::UpdateCameraVectors()

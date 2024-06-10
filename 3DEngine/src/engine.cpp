@@ -26,6 +26,7 @@ std::shared_ptr<camera_movement_system> cameraMovementSystem;
 std::shared_ptr<point_light_manager> pointLightManager;
 std::shared_ptr<directional_light_manager> directionalLightManager;
 std::shared_ptr<skybox_system> skyboxSystem;
+std::shared_ptr<transform_system> transformSystem;
 engine* engine::instance = nullptr;
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -122,15 +123,21 @@ void engine::ECSInit()
 	sand->uvMultiplier = 10.f;
 	sand->metallic = 2.f;
 
+	material_lit* sphereMat = new material_lit();
+	sphereMat->albedoMap = resource_manager::GetTexture("rustedAlbedo");
+	sphereMat->metallicMap = resource_manager::GetTexture("rustedMetallic");
+	sphereMat->roughnessMap = resource_manager::GetTexture("rustedRoughness");
+	sphereMat->normalMap = resource_manager::GetTexture("rustedNormal");
+
 	Entity e = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(e, transform {glm::vec3(0, 1, 2), glm::vec3(0, 30, 0), glm::vec3(1, 1, 1)});
 	gCoordinator.AddComponent(e, mesh_renderer {resource_manager::GetMesh("box"), mat, resource_manager::GetShader("default_lit")});
 	Entity e2 = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(e2, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
 	gCoordinator.AddComponent(e2, mesh_renderer {resource_manager::GetMesh("PLANE"), sand, resource_manager::GetShader("default_lit")});
-	// Entity e3 = gCoordinator.CreateEntity();
-	// gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 4, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	// gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("SPHERE"), sphereMat, resource_manager::GetShader("default_lit")});
+	Entity e3 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 4, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("SPHERE"), sphereMat, resource_manager::GetShader("default_lit")});
 	//  Entity e4 = gCoordinator.CreateEntity();
 	//  gCoordinator.AddComponent(e4, transform {glm::vec3(4, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
 	//  gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
@@ -212,6 +219,11 @@ void engine::RegisterSystems()
 	sig.set(gCoordinator.GetComponentType<skybox>());
 	gCoordinator.SetSystemSignature<skybox_system>(sig);
 	skyboxSystem = gCoordinator.RegisterSystem<skybox_system>();
+
+	sig = Signature();
+	sig.set(gCoordinator.GetComponentType<transform>());
+	gCoordinator.SetSystemSignature<transform_system>(sig);
+	transformSystem = gCoordinator.RegisterSystem<transform_system>();
 }
 
 void engine::Update()
@@ -220,6 +232,7 @@ void engine::Update()
 	std::cout << "FPS: " << 1.f / deltaTime << std::endl;
 	fpsCameraSystem->Update(deltaTime);
 	cameraMovementSystem->Update(deltaTime);
+	transformSystem->Update();
 }
 
 void engine::Render()
@@ -241,10 +254,11 @@ void engine::Render()
 	directionalLightManager->SetShaderVariables();
 	pointLightManager->SetShaderVariables();
 	SetShaderVariables();
-	skyboxSystem->Render();
 	meshRendererSystem->Render();
 	// m->t.rotation = glm::vec3(0, glm::radians((float)counter), 0);
 	// m->Render(resource_manager::GetShader("default"));
+	glDepthFunc(GL_LEQUAL);
+	skyboxSystem->Render();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -257,15 +271,18 @@ void engine::Render()
 
 void engine::SetShaderVariables()
 {
-	resource_manager::GetShader("default_lit")->SetMatrix4("view", cameraSystem.GetCurrentCamera()->GetViewMatrix(), true);
-	resource_manager::GetShader("default_lit")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
-	resource_manager::GetShader("default_lit")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->GetPosition());
+	cameraSystem.GetCurrentCamera()->ComputeViewMatrix();
+	glm::mat4 view = cameraSystem.GetCurrentCamera()->view;
+	glm::mat4 projection = cameraSystem.GetCurrentCamera()->projection;
+	resource_manager::GetShader("default_lit")->SetMatrix4("view", view, true);
+	resource_manager::GetShader("default_lit")->SetMatrix4("projection", projection);
+	resource_manager::GetShader("default_lit")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->position);
 
-	resource_manager::GetShader("default_unlit")->SetMatrix4("view", cameraSystem.GetCurrentCamera()->GetViewMatrix(), true);
-	resource_manager::GetShader("default_unlit")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
+	resource_manager::GetShader("default_unlit")->SetMatrix4("view", view, true);
+	resource_manager::GetShader("default_unlit")->SetMatrix4("projection", projection);
 
-	resource_manager::GetShader("skybox")->SetMatrix4("view", glm::mat4(glm::mat3(cameraSystem.GetCurrentCamera()->GetViewMatrix())), true);
-	resource_manager::GetShader("skybox")->SetMatrix4("projection", cameraSystem.GetCurrentCamera()->projection);
+	resource_manager::GetShader("skybox")->SetMatrix4("view", glm::mat4(glm::mat3(view)), true);
+	resource_manager::GetShader("skybox")->SetMatrix4("projection", projection);
 }
 
 void engine::Terminate()

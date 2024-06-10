@@ -71,7 +71,7 @@ void point_light_manager::RenderFromLightsPOV()
 
 void point_light_manager::SetShaderPerLightVariables(shader* s, std::string& name, point_light& light, transform& t)
 {
-	s->SetVector3f((name + "position").c_str(), t.position, true);
+	s->SetVector3f((name + "position").c_str(), t.GetGlobalPosition(), true);
 	s->SetVector3f((name + "color").c_str(), light.color * light.lightStrength);
 
 	s->SetFloat((name + "farPlane").c_str(), light.far);
@@ -83,17 +83,17 @@ void point_light_manager::SetDepthShaderVariables(point_light& light, transform&
 	resource_manager::GetShader("POINT_SHADOW_MAPPING")->Use();
 	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)POINT_SHADOW_MAP_WIDTH / (float)POINT_SHADOW_MAP_HEIGHT, light.near, light.far);
 	std::vector<glm::mat4> shadowTransforms;
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.position, t.position + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.position, t.position + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.position, t.position + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.position, t.position + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.position, t.position + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.position, t.position + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 	std::string prefix = "shadowMatrices[";
 	for (unsigned int i = 0; i < 6; ++i)
 		resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetMatrix4((prefix + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
 	resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetFloat("farPlane", light.far);
-	resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetVector3f("lightPos", t.position);
+	resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetVector3f("lightPos", t.GetGlobalPosition());
 	resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetInteger("cubemapIndex", light.shadowMapLevel);
 }
 
@@ -147,7 +147,7 @@ glm::mat4 directional_light_manager::GetLightSpaceMatrix()
 	for (const auto& entity : mEntities)
 	{
 		auto& light = gCoordinator.GetComponent<directional_light>(entity);
-		glm::vec3 camPos = engine::Instance()->cameraSystem.GetCurrentCamera()->GetPosition();
+		glm::vec3 camPos = engine::Instance()->cameraSystem.GetCurrentCamera()->position;
 		glm::mat4 projection = glm::ortho(camPos.x - light.range, camPos.x + light.range, camPos.z - light.range, camPos.z + light.range, light.nearPlane, light.farPlane);
 
 		return projection * light.view;

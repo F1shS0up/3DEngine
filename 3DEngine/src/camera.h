@@ -9,34 +9,32 @@
 struct camera
 {
 private:
-	glm::vec3 position;
 	float pitch, yaw;
 	glm::vec3 worldUp;
 
 public:
+	glm::vec3 position;
 	glm::vec3 front;
 	glm::vec3 right;
 	glm::vec3 up;
 
 	glm::mat4 projection;
+	glm::mat4 view;
 
 	float nearPlane, farPlane;
 	float fov;
-	int outputWidth, outputHeight;
+	int outputWidth, outputHeight, aspectRatio;
 	int fboTargetOffsetX, fboTargetOffsetY;
 	int fboTargetWidth, fboTargetHeight;
 
 	camera(int outputWidth, int outputHeight, float nearPlane, float farPlane, float fov, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float pitch = 0, float yaw = 0,
 		   glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
-	glm::mat4 GetViewMatrix()
+
+	void ComputeViewMatrix()
 	{
-		return glm::lookAt(position, position + front, up);
+		view = glm::lookAt(position, position + front, up);
 	}
 
-	void SetPosition(glm::vec3 position)
-	{
-		this->position = position;
-	}
 	void SetRotation(float pitch, float yaw, float roll)
 	{
 		this->pitch = pitch;
@@ -64,11 +62,6 @@ public:
 	void SetRoll(float roll)
 	{
 		UpdateCameraVectors();
-	}
-
-	glm::vec3 GetPosition()
-	{
-		return position;
 	}
 
 	void Pitch(float angle)

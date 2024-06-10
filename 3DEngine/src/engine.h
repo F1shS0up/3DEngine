@@ -56,7 +56,7 @@ public:
 	bool running;
 	GLFWwindow* window;
 	std::string assetPath;
-	options opt {options::AutoBlackBars, options::Windowed, 3840, 2160, 0, true, true, false, "3DEngine"};
+	options opt {options::AutoBlackBars, options::Windowed, 3840, 2160, 0, true, false, false, "3DEngine"};
 	camera_system cameraSystem;
 	key_holder keyHolder;
 

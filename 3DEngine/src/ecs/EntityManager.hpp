@@ -5,7 +5,6 @@
 #include <array>
 #include <cassert>
 #include <queue>
-
 class EntityManager
 {
 public:

@@ -38,7 +38,7 @@ void camera_movement_system::Update(float& deltaTime)
 				default:
 					break;
 				}
-				movement.cam->SetPosition(movement.cam->GetPosition() + dir * movement.speed * deltaTime);
+				movement.cam->position = movement.cam->position + dir * movement.speed * deltaTime;
 			}
 		}
 	}

@@ -86,12 +86,7 @@ void mesh_renderer_system::RenderUsingShader(shader* s)
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
 		auto& t = gCoordinator.GetComponent<transform>(entity);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, t.position);
-		model = glm::rotate(model, t.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, t.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, t.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::scale(model, t.scale);
+		glm::mat4 model = t.GetModelMatrix();
 		s->SetMatrix4("model", model, true);
 		renderer.m->Render(s);
 	}
@@ -103,12 +98,7 @@ void mesh_renderer_system::Render()
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
 		auto& t = gCoordinator.GetComponent<transform>(entity);
 
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::translate(model, t.position);
-		model = glm::rotate(model, t.rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, t.rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::rotate(model, t.rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
-		model = glm::scale(model, t.scale);
+		glm::mat4 model = t.GetModelMatrix();
 		renderer.shader->SetMatrix4("model", model, true);
 		renderer.mat->Set(renderer.shader);
 		renderer.m->Render(renderer.shader);
