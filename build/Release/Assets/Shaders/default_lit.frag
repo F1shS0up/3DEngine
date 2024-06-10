@@ -93,10 +93,10 @@ float DirectionalShadowCalculation(vec3 normal, Light dirLight)
 		lightCoords = (lightCoords + 1.0f) / 2.0f;
 		float currentDepth = lightCoords.z;
 		// Prevents shadow acne
-		float bias = max(0.005f * (1.0f - dot(normal, normalize(dirLight.position - fs_in.WorldPos))), 0.005f);
+		float bias = max(0.025f * (1.0f - dot(normal, normalize(dirLight.position - fs_in.WorldPos))), 0.005f);
 
 		// Smoothens out the shadows
-		int sampleRadius = 2;
+		int sampleRadius = 1;
 		vec2 pixelSize = 1.0 / textureSize(shadowMap, 0);
 		for (int y = -sampleRadius; y <= sampleRadius; y++)
 		{
