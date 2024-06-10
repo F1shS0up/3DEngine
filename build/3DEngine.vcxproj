@@ -265,6 +265,7 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\easing.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.cpp" />
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\main.cpp" />
@@ -288,6 +289,7 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs\Types.hpp" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.h" />

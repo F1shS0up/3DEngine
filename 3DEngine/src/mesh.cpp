@@ -113,6 +113,8 @@ bool mesh::LoadOBJ(const char* path, std::vector<vertex>& vertices)
 		unsigned int normalIndex = normalIndices[i];
 		vertices.push_back(vertex(temp_vertices[vertexIndex - 1], temp_uvs[uvIndex - 1], temp_normals[normalIndex - 1], temp_tangents[vertexIndex - 1], temp_bitangents[vertexIndex - 1]));
 	}
+
+	vol = new aabb(GenerateAABB(this));
 }
 
 void mesh::InitRenderData()

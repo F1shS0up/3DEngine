@@ -1,5 +1,7 @@
 #include "camera.h"
 
+#include "engine.h"
+
 #include <iostream>
 
 void camera_system::CreateCamera(camera cam)
@@ -14,13 +16,20 @@ void camera_system::CreateCamera(camera cam)
 camera::camera(int outputWidth, int outputHeight, float nearPlane, float farPlane, float fov, glm::vec3 position, float pitch, float yaw, glm::vec3 worldUp) :
 	position(position), pitch(pitch), yaw(yaw), worldUp(worldUp), outputWidth(outputWidth), outputHeight(outputHeight), nearPlane(nearPlane), farPlane(farPlane), fov(fov)
 {
+	if (outputWidth == 0 || outputHeight == 0)
+	{
+		this->outputWidth = engine::Instance()->windowInfo.windowWidth;
+		this->outputHeight = engine::Instance()->windowInfo.windowHeight;
+		std::cout << "Camera output size not specified, using window size: " << this->outputWidth << "x" << this->outputHeight << std::endl;
+	}
+	projection = glm::perspective(glm::radians(fov), (float)this->outputWidth / (float)this->outputHeight, nearPlane, farPlane);
+	aspectRatio = (float)this->outputWidth / (float)this->outputHeight;
 	UpdateCameraVectors();
-	projection = glm::perspective(glm::radians(fov), (float)outputWidth / (float)outputHeight, nearPlane, farPlane);
-	aspectRatio = (float)outputWidth / (float)outputHeight;
 }
 
 void camera::UpdateCameraVectors()
 {
+	cameraFrustum = CreateFrustumFromCamera(this);
 	front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
 	front.y = sin(glm::radians(pitch));
 	front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));

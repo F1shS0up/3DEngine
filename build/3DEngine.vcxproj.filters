@@ -16,6 +16,9 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp">
       <Filter>sources</Filter>
     </ClCompile>
@@ -88,6 +91,9 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.h">

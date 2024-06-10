@@ -148,7 +148,7 @@ glm::mat4 directional_light_manager::GetLightSpaceMatrix()
 	{
 		auto& light = gCoordinator.GetComponent<directional_light>(entity);
 		glm::vec3 camPos = engine::Instance()->cameraSystem.GetCurrentCamera()->position;
-		glm::mat4 projection = glm::ortho(camPos.x - light.range, camPos.x + light.range, camPos.z - light.range, camPos.z + light.range, light.nearPlane, light.farPlane);
+		glm::mat4 projection = glm::ortho(-light.range, +light.range, -light.range, light.range, light.nearPlane, light.farPlane);
 
 		return projection * light.view;
 	}

@@ -34,11 +34,13 @@ struct mesh_renderer
 	mesh* m;
 	material* mat;
 	class shader* shader;
+	bool visible = true;
 };
 
 struct mesh_renderer_system : public System
 {
 	void Init();
 	void RenderUsingShader(class shader* s);
+	void Update();
 	void Render();
 };

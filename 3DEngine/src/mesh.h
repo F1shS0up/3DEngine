@@ -1,4 +1,5 @@
 #pragma once
+#include "frustum.h"
 #include "glm/glm.hpp"
 
 #include <vector>
@@ -15,6 +16,7 @@ struct mesh
 {
 	std::vector<vertex> vertices;
 	unsigned int VAO, VBO;
+	bounding_volume* vol;
 	mesh() = default;
 	mesh(const char* path)
 	{

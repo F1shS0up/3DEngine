@@ -59,8 +59,9 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 }
 void engine::Init()
 {
-	cameraSystem.CreateCamera(camera(3840, 2160, .1f, 10000.0f, 60.0f, glm::vec3(0, 0, 0), 0, 90));
 	InitGL();
+	cameraSystem.CreateCamera(camera(0, 0, .1f, 1000.0f, 45.0f, glm::vec3(0, 0, 0), 0, 90));
+	CreateFBO();
 
 	// m = new model(new mesh((assetPath + "Models/backpack.obj").c_str()), transform(glm::vec3(0, 2, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)));
 	resource_manager::LoadTexture((assetPath + "Engine/Textures/white.png").c_str(), "DEFAULT");
@@ -75,6 +76,24 @@ void engine::Init()
 	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SandDesertAO.png").c_str(), "SandAO");
 	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SandDesertNormal.png").c_str(), "SandNormal");
 	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SandDesertRoughness.png").c_str(), "SandRoughness");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SpaceBlanketAlbedo.png").c_str(), "SpaceBlanketAlbedo");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SpaceBlanketAO.png").c_str(), "SpaceBlanketAO");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SpaceBlanketNormal.png").c_str(), "SpaceBlanketNormal");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SpaceBlanketRoughness.png").c_str(), "SpaceBlanketRoughness");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/SpaceBlanketMetallic.png").c_str(), "SpaceBlanketMetallic");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/WoodAlbedo.png").c_str(), "WoodAlbedo");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/WoodAO.png").c_str(), "WoodAO");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/WoodNormal.png").c_str(), "WoodNormal");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/WoodRoughness.png").c_str(), "WoodRoughness");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/FabricAlbedo.png").c_str(), "FabricAlbedo");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/FabricAO.png").c_str(), "FabricAO");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/FabricNormal.png").c_str(), "FabricNormal");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/FabricRoughness.png").c_str(), "FabricRoughness");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/ScifiPanelAlbedo.png").c_str(), "ScifiPanelAlbedo");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/ScifiPanelAO.png").c_str(), "ScifiPanelAO");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/ScifiPanelNormal.png").c_str(), "ScifiPanelNormal");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/ScifiPanelRoughness.png").c_str(), "ScifiPanelRoughness");
+	resource_manager::LoadTexture((assetPath + "Textures/surfaces/ScifiPanelMetallic.png").c_str(), "ScifiPanelMetallic");
 
 	resource_manager::LoadShader((assetPath + "Shaders/3Dtest.vert").c_str(), (assetPath + "Shaders/3Dtest.frag").c_str(), nullptr, "3Dtest");
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default.frag").c_str(), nullptr, "default");
@@ -86,11 +105,9 @@ void engine::Init()
 								 "POINT_SHADOW_MAPPING");
 
 	resource_manager::LoadMesh((assetPath + "Models/backpack.obj").c_str(), "backpack");
-	resource_manager::LoadMesh((assetPath + "Models/untitled.obj").c_str(), "untitled");
 	resource_manager::LoadMesh((assetPath + "Models/box.obj").c_str(), "box");
 	resource_manager::LoadMesh((assetPath + "Engine/sphere.obj").c_str(), "SPHERE");
 	resource_manager::LoadMesh((assetPath + "Engine/plane.obj").c_str(), "PLANE");
-	resource_manager::LoadMesh((assetPath + "Models/selfShadowTest.obj").c_str(), "selfShadowTest");
 
 	resource_manager::LoadCubemap((assetPath + "Textures/skybox").c_str(), ".png", "skybox");
 
@@ -109,75 +126,134 @@ void engine::ECSInit()
 	gCoordinator.RegisterComponent<skybox>();
 
 	RegisterSystems();
-	material_lit* mat = new material_lit();
-	mat->albedoMap = resource_manager::GetTexture("rustedAlbedo");
-	mat->metallicMap = resource_manager::GetTexture("rustedMetallic");
-	mat->roughnessMap = resource_manager::GetTexture("rustedRoughness");
-	mat->normalMap = resource_manager::GetTexture("rustedNormal");
-
 	material_lit* sand = new material_lit();
 	sand->albedoMap = resource_manager::GetTexture("SandAlbedo");
 	sand->roughnessMap = resource_manager::GetTexture("SandRoughness");
 	sand->normalMap = resource_manager::GetTexture("SandNormal");
 	sand->aoMap = resource_manager::GetTexture("SandAO");
-	sand->uvMultiplier = 10.f;
-	sand->metallic = 2.f;
 
-	material_lit* sphereMat = new material_lit();
-	sphereMat->albedoMap = resource_manager::GetTexture("rustedAlbedo");
-	sphereMat->metallicMap = resource_manager::GetTexture("rustedMetallic");
-	sphereMat->roughnessMap = resource_manager::GetTexture("rustedRoughness");
-	sphereMat->normalMap = resource_manager::GetTexture("rustedNormal");
+	material_lit* spaceBlanket = new material_lit();
+	spaceBlanket->albedoMap = resource_manager::GetTexture("SpaceBlanketAlbedo");
+	spaceBlanket->roughnessMap = resource_manager::GetTexture("SpaceBlanketRoughness");
+	spaceBlanket->normalMap = resource_manager::GetTexture("SpaceBlanketNormal");
+	spaceBlanket->aoMap = resource_manager::GetTexture("SpaceBlanketAO");
+	spaceBlanket->metallicMap = resource_manager::GetTexture("SpaceBlanketMetallic");
 
-	Entity e = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e, transform {glm::vec3(0, 1, 2), glm::vec3(0, 30, 0), glm::vec3(1, 1, 1)});
-	gCoordinator.AddComponent(e, mesh_renderer {resource_manager::GetMesh("box"), mat, resource_manager::GetShader("default_lit")});
-	Entity e2 = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e2, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
-	gCoordinator.AddComponent(e2, mesh_renderer {resource_manager::GetMesh("PLANE"), sand, resource_manager::GetShader("default_lit")});
-	Entity e3 = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 4, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("SPHERE"), sphereMat, resource_manager::GetShader("default_lit")});
-	//  Entity e4 = gCoordinator.CreateEntity();
-	//  gCoordinator.AddComponent(e4, transform {glm::vec3(4, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	//  gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
-	//   Entity e4 = gCoordinator.CreateEntity();
-	//   gCoordinator.AddComponent(e4, transform {glm::vec3(-10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	//   gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	//   Entity e5 = gCoordinator.CreateEntity();
-	//   gCoordinator.AddComponent(e5, transform {glm::vec3(5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	//   gCoordinator.AddComponent(e5, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	//   Entity e6 = gCoordinator.CreateEntity();
-	//   gCoordinator.AddComponent(e6, transform {glm::vec3(5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	//   gCoordinator.AddComponent(e6, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	//   Entity e7 = gCoordinator.CreateEntity();
-	//   gCoordinator.AddComponent(e7, transform {glm::vec3(-5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	//   gCoordinator.AddComponent(e7, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
-	//   Entity e8 = gCoordinator.CreateEntity();
-	//   gCoordinator.AddComponent(e8, transform {glm::vec3(-5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	//   gCoordinator.AddComponent(e8, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	material_lit* rusted = new material_lit();
+	rusted->albedoMap = resource_manager::GetTexture("rustedAlbedo");
+	rusted->metallicMap = resource_manager::GetTexture("rustedMetallic");
+	rusted->roughnessMap = resource_manager::GetTexture("rustedRoughness");
+	rusted->normalMap = resource_manager::GetTexture("rustedNormal");
+
+	material_lit* wood = new material_lit();
+	wood->albedoMap = resource_manager::GetTexture("WoodAlbedo");
+	wood->roughnessMap = resource_manager::GetTexture("WoodRoughness");
+	wood->normalMap = resource_manager::GetTexture("WoodNormal");
+	wood->aoMap = resource_manager::GetTexture("WoodAO");
+
+	material_lit* fabric = new material_lit();
+	fabric->albedoMap = resource_manager::GetTexture("FabricAlbedo");
+	fabric->roughnessMap = resource_manager::GetTexture("FabricRoughness");
+	fabric->normalMap = resource_manager::GetTexture("FabricNormal");
+	fabric->aoMap = resource_manager::GetTexture("FabricAO");
+
+	material_lit* scifiPanel = new material_lit();
+	scifiPanel->albedoMap = resource_manager::GetTexture("ScifiPanelAlbedo");
+	scifiPanel->roughnessMap = resource_manager::GetTexture("ScifiPanelRoughness");
+	scifiPanel->normalMap = resource_manager::GetTexture("ScifiPanelNormal");
+	scifiPanel->aoMap = resource_manager::GetTexture("ScifiPanelAO");
+	scifiPanel->metallicMap = resource_manager::GetTexture("ScifiPanelMetallic");
+
+	material_lit* scifiPanelPlane = new material_lit();
+	scifiPanelPlane->albedoMap = resource_manager::GetTexture("ScifiPanelAlbedo");
+	scifiPanelPlane->roughnessMap = resource_manager::GetTexture("ScifiPanelRoughness");
+	scifiPanelPlane->normalMap = resource_manager::GetTexture("ScifiPanelNormal");
+	scifiPanelPlane->aoMap = resource_manager::GetTexture("ScifiPanelAO");
+	scifiPanelPlane->metallicMap = resource_manager::GetTexture("ScifiPanelMetallic");
+	scifiPanelPlane->uvMultiplier = 10.f;
+
+	Entity sphere0 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sphere0, transform {glm::vec3(-5, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(sphere0, mesh_renderer {resource_manager::GetMesh("SPHERE"), sand, resource_manager::GetShader("default_lit")});
+
+	Entity sphere1 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sphere1, transform {glm::vec3(-3, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(sphere1, mesh_renderer {resource_manager::GetMesh("SPHERE"), rusted, resource_manager::GetShader("default_lit")});
+
+	Entity sphere2 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sphere2, transform {glm::vec3(-1, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(sphere2, mesh_renderer {resource_manager::GetMesh("SPHERE"), wood, resource_manager::GetShader("default_lit")});
+
+	Entity sphere3 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sphere3, transform {glm::vec3(1, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(sphere3, mesh_renderer {resource_manager::GetMesh("SPHERE"), fabric, resource_manager::GetShader("default_lit")});
+
+	Entity sphere4 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sphere4, transform {glm::vec3(3, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(sphere4, mesh_renderer {resource_manager::GetMesh("SPHERE"), spaceBlanket, resource_manager::GetShader("default_lit")});
+
+	Entity sphere5 = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(sphere5, transform {glm::vec3(5, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	gCoordinator.AddComponent(sphere5, mesh_renderer {resource_manager::GetMesh("SPHERE"), scifiPanel, resource_manager::GetShader("default_lit")});
+
+	Entity plane = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(plane, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
+	gCoordinator.AddComponent(plane, mesh_renderer {resource_manager::GetMesh("PLANE"), scifiPanelPlane, resource_manager::GetShader("default_lit")});
+
+	// Entity e = gCoordinator.CreateEntity();
+	// gCoordinator.AddComponent(e, transform {glm::vec3(0, 1, 2), glm::vec3(0, 30, 0), glm::vec3(1, 1, 1)});
+	// gCoordinator.AddComponent(e, mesh_renderer {resource_manager::GetMesh("box"), mat, resource_manager::GetShader("default_lit")});
+	// Entity e2 = gCoordinator.CreateEntity();
+	// gCoordinator.AddComponent(e2, transform {glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
+	// gCoordinator.AddComponent(e2, mesh_renderer {resource_manager::GetMesh("PLANE"), spaceBlanket, resource_manager::GetShader("default_lit")});
+	// Entity e3 = gCoordinator.CreateEntity();
+	// gCoordinator.AddComponent(e3, transform {glm::vec3(-2, 4, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	// gCoordinator.AddComponent(e3, mesh_renderer {resource_manager::GetMesh("SPHERE"), sphereMat, resource_manager::GetShader("default_lit")});
+	//    Entity e4 = gCoordinator.CreateEntity();
+	//    gCoordinator.AddComponent(e4, transform {glm::vec3(4, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//    gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), matBackpack, resource_manager::GetShader("default_lit")});
+	//     Entity e4 = gCoordinator.CreateEntity();
+	//     gCoordinator.AddComponent(e4, transform {glm::vec3(-10, 0, 0), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//     gCoordinator.AddComponent(e4, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//     Entity e5 = gCoordinator.CreateEntity();
+	//     gCoordinator.AddComponent(e5, transform {glm::vec3(5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//     gCoordinator.AddComponent(e5, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//     Entity e6 = gCoordinator.CreateEntity();
+	//     gCoordinator.AddComponent(e6, transform {glm::vec3(5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//     gCoordinator.AddComponent(e6, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//     Entity e7 = gCoordinator.CreateEntity();
+	//     gCoordinator.AddComponent(e7, transform {glm::vec3(-5, 0, -5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//     gCoordinator.AddComponent(e7, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
+	//     Entity e8 = gCoordinator.CreateEntity();
+	//     gCoordinator.AddComponent(e8, transform {glm::vec3(-5, 0, 5), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
+	//     gCoordinator.AddComponent(e8, mesh_renderer {resource_manager::GetMesh("backpack"), mat, resource_manager::GetShader("default_lit")});
 
 	Entity fpsCamera = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(fpsCamera, fps_camera {cameraSystem.GetCurrentCamera()});
 	gCoordinator.AddComponent(fpsCamera, camera_movement {cameraSystem.GetCurrentCamera()});
 
-	material_unlit* greenMat = new material_unlit();
-	greenMat->map = resource_manager::GetTexture("DEFAULT");
-	greenMat->ambient = glm::vec3(0.0f, 1.0f, 0.0f);
+	material_unlit* redMat = new material_unlit();
+	redMat->map = resource_manager::GetTexture("DEFAULT");
+	redMat->ambient = glm::vec3(1.0f, 0.0f, 0.0f);
 
 	material_unlit* blueMat = new material_unlit();
 	blueMat->map = resource_manager::GetTexture("DEFAULT");
 	blueMat->ambient = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	Entity directionalLight = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(directionalLight, directional_light(glm::vec3(0, -1, -.8f), 1.f, 100.f, 25.f, 4.f, true, glm::vec3(1.f, 1.f, 1.f)));
+	gCoordinator.AddComponent(directionalLight, directional_light(glm::vec3(0, -1, -.8f), 1.f, 100.f, 25.f, 0.f, true, glm::vec3(1.f, 1.f, 1.f)));
 
 	Entity sky = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(sky, skybox {resource_manager::GetCubemap("skybox")});
 
+	Entity pointLight = gCoordinator.CreateEntity();
+	gCoordinator.AddComponent(pointLight, transform {glm::vec3(-3, 2, 2), glm::vec3(0, 0, 0), glm::vec3(.2f)});
+	gCoordinator.AddComponent(pointLight, point_light {30.f, true, glm::vec3(1.f, 0.f, 0.f)});
+	gCoordinator.AddComponent(pointLight, mesh_renderer {resource_manager::GetMesh("SPHERE"), redMat, resource_manager::GetShader("default_unlit")});
+
 	Entity pointLight2 = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(pointLight2, transform {glm::vec3(1, 1, 0), glm::vec3(0, 0, 0), glm::vec3(.2f)});
-	gCoordinator.AddComponent(pointLight2, point_light {10.f, true, glm::vec3(0.f, 0.f, 1.f)});
+	gCoordinator.AddComponent(pointLight2, transform {glm::vec3(3, 2, 2), glm::vec3(0, 0, 0), glm::vec3(.2f)});
+	gCoordinator.AddComponent(pointLight2, point_light {40.f, true, glm::vec3(0.f, 0.f, 1.f)});
 	gCoordinator.AddComponent(pointLight2, mesh_renderer {resource_manager::GetMesh("SPHERE"), blueMat, resource_manager::GetShader("default_unlit")});
 
 	pointLightManager->Init();
@@ -229,10 +305,11 @@ void engine::RegisterSystems()
 void engine::Update()
 {
 	MousePositionUpdate();
-	std::cout << "FPS: " << 1.f / deltaTime << std::endl;
 	fpsCameraSystem->Update(deltaTime);
 	cameraMovementSystem->Update(deltaTime);
 	transformSystem->Update();
+
+	meshRendererSystem->Update();
 }
 
 void engine::Render()
@@ -346,6 +423,14 @@ void engine::InitGL()
 		window = glfwCreateWindow(opt.wndWidth, opt.wndHeight, opt.windowName.c_str(), nullptr, nullptr);
 		windowInfo.windowWidth = opt.wndWidth;
 		windowInfo.windowHeight = opt.wndHeight;
+
+		if (opt.centerWindow)
+		{
+			glm::vec2 centerOfMonitor = glm::vec2(windowInfo.monitorWidth / 2.f, windowInfo.monitorHeight / 2.f);
+			glm::vec2 halfWindowDimensions = glm::vec2(windowInfo.windowWidth / 2.f, windowInfo.windowHeight / 2.f);
+			glm::vec2 pos = centerOfMonitor - halfWindowDimensions;
+			glfwSetWindowPos(window, pos.x, pos.y);
+		}
 	}
 
 	if (!window)
@@ -383,8 +468,6 @@ void engine::InitGL()
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_CULL_FACE);
-
-	CreateFBO();
 }
 
 void engine::GetAssetPath()

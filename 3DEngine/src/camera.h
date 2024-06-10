@@ -1,4 +1,5 @@
 #pragma once
+#include "frustum.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
@@ -13,6 +14,7 @@ private:
 	glm::vec3 worldUp;
 
 public:
+	frustum cameraFrustum;
 	glm::vec3 position;
 	glm::vec3 front;
 	glm::vec3 right;
@@ -23,7 +25,8 @@ public:
 
 	float nearPlane, farPlane;
 	float fov;
-	int outputWidth, outputHeight, aspectRatio;
+	float aspectRatio;
+	int outputWidth, outputHeight;
 	int fboTargetOffsetX, fboTargetOffsetY;
 	int fboTargetWidth, fboTargetHeight;
 

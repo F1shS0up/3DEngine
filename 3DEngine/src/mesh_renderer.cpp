@@ -1,6 +1,7 @@
 #include "mesh_renderer.h"
 
 #include "ecs/coordinator.hpp"
+#include "engine.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "resource_manager.h"
@@ -91,11 +92,33 @@ void mesh_renderer_system::RenderUsingShader(shader* s)
 		renderer.m->Render(s);
 	}
 }
+void mesh_renderer_system::Update()
+{
+	int meshesRendered = 0;
+	for (const auto& entity : mEntities)
+	{
+		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
+		auto& t = gCoordinator.GetComponent<transform>(entity);
+		if (!renderer.m->vol->IsOnFrustum(engine::Instance()->cameraSystem.GetCurrentCamera()->cameraFrustum, t))
+		{
+			renderer.visible = false;
+		}
+		else
+		{
+			renderer.visible = true;
+			meshesRendered++;
+		}
+	}
+
+	std::cout << meshesRendered << " meshes rendered" << std::endl;
+}
 void mesh_renderer_system::Render()
 {
 	for (const auto& entity : mEntities)
 	{
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
+		if (renderer.visible == false) continue;
+
 		auto& t = gCoordinator.GetComponent<transform>(entity);
 
 		glm::mat4 model = t.GetModelMatrix();

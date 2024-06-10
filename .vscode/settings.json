@@ -78,7 +78,15 @@
         "span": "cpp",
         "stack": "cpp",
         "numeric": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "any": "cpp",
+        "bitset": "cpp",
+        "cinttypes": "cpp",
+        "condition_variable": "cpp",
+        "queue": "cpp",
+        "random": "cpp",
+        "regex": "cpp",
+        "variant": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false
 }
