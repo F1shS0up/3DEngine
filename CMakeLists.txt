@@ -47,7 +47,8 @@ include_directories(3DEngine/src/
     3DEngine/vendor/box2d/include
     3DEngine/vendor/jsoncpp/include
     3DEngine/vendor/freetype/include
-    3DEngine/vendor/irrKlang/include)
+    3DEngine/vendor/irrKlang/include
+    3DEngine/vendor/cgltf)
 
 #
 # Add files

@@ -13,7 +13,7 @@ void camera_system::CreateCamera(camera cam)
 	}
 }
 
-camera::camera(int outputWidth, int outputHeight, float nearPlane, float farPlane, float fov, glm::vec3 position, float pitch, float yaw, glm::vec3 worldUp) :
+camera::camera(int outputWidth, int outputHeight, float nearPlane, float farPlane, float fov, glm::vec4 position, float pitch, float yaw, glm::vec3 worldUp) :
 	position(position), pitch(pitch), yaw(yaw), worldUp(worldUp), outputWidth(outputWidth), outputHeight(outputHeight), nearPlane(nearPlane), farPlane(farPlane), fov(fov)
 {
 	if (outputWidth == 0 || outputHeight == 0)

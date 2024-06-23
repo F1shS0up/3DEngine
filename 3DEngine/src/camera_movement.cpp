@@ -38,7 +38,7 @@ void camera_movement_system::Update(float& deltaTime)
 				default:
 					break;
 				}
-				movement.cam->position = movement.cam->position + dir * movement.speed * deltaTime;
+				movement.cam->position = glm::vec4((glm::vec3)movement.cam->position + dir * movement.speed * deltaTime, 1);
 			}
 		}
 	}

@@ -86,7 +86,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -104,10 +104,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;GLFW_INCLUDE_NONE;PROJECT_SOURCE_DIR=\"C:/Users/adamv/Documents/3DEngine\";CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -130,7 +130,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -148,10 +148,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GLFW_INCLUDE_NONE;PROJECT_SOURCE_DIR=\"C:/Users/adamv/Documents/3DEngine\";CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -174,7 +174,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
@@ -192,10 +192,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GLFW_INCLUDE_NONE;PROJECT_SOURCE_DIR=\"C:/Users/adamv/Documents/3DEngine\";CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -218,7 +218,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -235,10 +235,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;GLFW_INCLUDE_NONE;PROJECT_SOURCE_DIR=\"C:/Users/adamv/Documents/3DEngine\";CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\adamv\Documents\3DEngine\3DEngine\src;C:\Users\adamv\Documents\3DEngine\3DEngine\gamesrc;C:\Users\adamv\Documents\3DEngine\3DEngine\src\ecs;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glad\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glfw\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\glm;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\stb;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\box2d\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\jsoncpp\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\freetype\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\irrKlang\include;C:\Users\adamv\Documents\3DEngine\3DEngine\vendor\cgltf;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -266,11 +266,15 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp" />
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\main.cpp" />
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\material.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.cpp" />
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.cpp" />
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.cpp" />
@@ -290,15 +294,21 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\json.hpp" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\material.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\options.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\tiny_gltf.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\transform.h" />
     <None Include="C:\Users\adamv\Documents\3DEngine\.gitignore">
     </None>

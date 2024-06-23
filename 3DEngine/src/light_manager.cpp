@@ -38,8 +38,9 @@ void point_light_manager::Init()
 }
 void point_light_manager::SetShaderVariables()
 {
-	resource_manager::GetShader("default_lit")->SetInteger("lightCount", mEntities.size() + 1, true); // +1 for directional light
-	glActiveTexture(GL_TEXTURE6);
+	resource_manager::GetShader("default_lit")->SetInteger("lightCount", mEntities.size() + 1, true);	  // +1 for directional light
+	resource_manager::GetShader("transparent_lit")->SetInteger("lightCount", mEntities.size() + 1, true); // +1 for directional light
+	glActiveTexture(GL_TEXTURE7);
 	glBindTexture(GL_TEXTURE_CUBE_MAP_ARRAY, SHADOW_MAP_ARRAY);
 
 	int index = 0;
@@ -49,6 +50,9 @@ void point_light_manager::SetShaderVariables()
 		transform& t = gCoordinator.GetComponent<transform>(entity);
 		shader* s = resource_manager::GetShader("default_lit");
 		std::string name = "lights[" + std::to_string(index + 1) + "].";
+		SetShaderPerLightVariables(s, name, light, t);
+		s = resource_manager::GetShader("transparent_lit");
+		name = "lights[" + std::to_string(index + 1) + "].";
 		SetShaderPerLightVariables(s, name, light, t);
 		index++;
 	}
@@ -64,7 +68,7 @@ void point_light_manager::RenderFromLightsPOV()
 		point_light& light = gCoordinator.GetComponent<point_light>(entity);
 		transform& t = gCoordinator.GetComponent<transform>(entity);
 		SetDepthShaderVariables(light, t);
-		meshRendererSystem->RenderUsingShader(resource_manager::GetShader("POINT_SHADOW_MAPPING"));
+		meshRendererSystem->RenderShadowMap(resource_manager::GetShader("POINT_SHADOW_MAPPING"));
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -83,12 +87,12 @@ void point_light_manager::SetDepthShaderVariables(point_light& light, transform&
 	resource_manager::GetShader("POINT_SHADOW_MAPPING")->Use();
 	glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)POINT_SHADOW_MAP_WIDTH / (float)POINT_SHADOW_MAP_HEIGHT, light.near, light.far);
 	std::vector<glm::mat4> shadowTransforms;
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
-	shadowTransforms.push_back(shadowProj * glm::lookAt(t.GetGlobalPosition(), t.GetGlobalPosition() + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt((glm::vec3)t.GetGlobalPosition(), (glm::vec3)t.GetGlobalPosition() + glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt((glm::vec3)t.GetGlobalPosition(), (glm::vec3)t.GetGlobalPosition() + glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt((glm::vec3)t.GetGlobalPosition(), (glm::vec3)t.GetGlobalPosition() + glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, 1.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt((glm::vec3)t.GetGlobalPosition(), (glm::vec3)t.GetGlobalPosition() + glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, -1.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt((glm::vec3)t.GetGlobalPosition(), (glm::vec3)t.GetGlobalPosition() + glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, -1.0, 0.0)));
+	shadowTransforms.push_back(shadowProj * glm::lookAt((glm::vec3)t.GetGlobalPosition(), (glm::vec3)t.GetGlobalPosition() + glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, -1.0, 0.0)));
 	std::string prefix = "shadowMatrices[";
 	for (unsigned int i = 0; i < 6; ++i)
 		resource_manager::GetShader("POINT_SHADOW_MAPPING")->SetMatrix4((prefix + std::to_string(i) + "]").c_str(), shadowTransforms[i]);
@@ -130,7 +134,7 @@ void directional_light_manager::RenderFromLightsPOV()
 	glViewport(0, 0, DIRECTIONAL_SHADOW_MAP_WIDTH, DIRECTIONAL_SHADOW_MAP_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, DIRECTIONAL_DEPTH_FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	meshRendererSystem->RenderUsingShader(resource_manager::GetShader("DIRECTIONAL_SHADOW_MAPPING"));
+	meshRendererSystem->RenderShadowMap(resource_manager::GetShader("DIRECTIONAL_SHADOW_MAPPING"));
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -164,7 +168,7 @@ void directional_light_manager::SetShaderVariables()
 		resource_manager::GetShader("default_lit")->SetVector3f("lights[0].position", -light.direction * 10000.f);
 		resource_manager::GetShader("default_lit")->SetInteger("lights[0].castShadows", light.castShadows);
 		resource_manager::GetShader("default_lit")->SetFloat("lights[0].farPlane", light.farPlane);
-		glActiveTexture(GL_TEXTURE5);
+		glActiveTexture(GL_TEXTURE6);
 		glBindTexture(GL_TEXTURE_2D, DIRECTIONAL_DEPTH_MAP);
 		return;
 	}

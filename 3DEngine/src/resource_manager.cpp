@@ -17,13 +17,13 @@
 // Instantiate static variables
 std::map<std::string, texture2D> resource_manager::textures;
 std::map<std::string, shader> resource_manager::shaders;
-std::map<std::string, mesh> resource_manager::meshes;
+std::map<std::string, model> resource_manager::models;
 std::map<std::string, unsigned int> resource_manager::cubemaps;
 
-shader* resource_manager::LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name)
+shader* resource_manager::LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, const char* vcShaderFile, const char* veShaderFile, std::string name)
 {
 	if (shaders.find(name) != shaders.end()) std::cout << "Shader already exists: " << name << std::endl;
-	shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile);
+	shaders[name] = loadShaderFromFile(vShaderFile, fShaderFile, gShaderFile, vcShaderFile, veShaderFile);
 	return &shaders[name];
 }
 
@@ -46,17 +46,34 @@ texture2D* resource_manager::GetTexture(std::string name)
 	return &textures[name];
 }
 
-mesh* resource_manager::LoadMesh(const char* file, std::string name)
+model* resource_manager::LoadModel(const char* file, std::string name, float verticesScalar)
 {
-	if (meshes.find(name) != meshes.end()) std::cout << "Mesh already exists: " << name << std::endl;
-	meshes[name] = mesh(file);
-	return &meshes[name];
+	if (models.find(name) != models.end()) std::cout << "Mesh already exists: " << name << std::endl;
+	models[name] = model::LoadModelFromObj(file, verticesScalar);
+	std::cout << "Mesh loaded: " << name << std::endl;
+	return &models[name];
 }
 
-mesh* resource_manager::GetMesh(std::string name)
+model* resource_manager::LoadModelFromBinary(const char* binaryFile, std::string name)
 {
-	if (meshes.find(name) == meshes.end()) std::cout << "Mesh not found: " << name << std::endl;
-	return &meshes[name];
+	if (models.find(name) != models.end()) std::cout << "Mesh already exists: " << name << std::endl;
+	models[name] = model::LoadModelFromBinary(binaryFile);
+	std::cout << "Mesh loaded: " << name << std::endl;
+	return &models[name];
+}
+
+model* resource_manager::LoadModelFromGLTF(const char* gltfFile, std::string name)
+{
+	if (models.find(name) != models.end()) std::cout << "Mesh already exists: " << name << std::endl;
+	models[name] = model::LoadModelFromGLTF(gltfFile);
+	std::cout << "Mesh loaded: " << name << std::endl;
+	return &models[name];
+}
+
+model* resource_manager::GetModel(std::string name)
+{
+	if (models.find(name) == models.end()) std::cout << "Mesh not found: " << name << std::endl;
+	return &models[name];
 }
 
 unsigned int resource_manager::LoadCubemap(std::string folder, std::string extension, std::string name)
@@ -90,12 +107,14 @@ void resource_manager::Clear()
 		glDeleteTextures(1, &iter.second.ID);
 }
 
-shader resource_manager::loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile)
+shader resource_manager::loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, const char* tcsShaderFile, const char* tesShaderFile)
 {
 	// 1. retrieve the vertex/fragment source code from filePath
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::string geometryCode;
+	std::string tcsCode;
+	std::string tesCode;
 	try
 	{
 		// open files
@@ -120,6 +139,22 @@ shader resource_manager::loadShaderFromFile(const char* vShaderFile, const char*
 			geometryShaderFile.close();
 			geometryCode = gshaderstream.str();
 		}
+		if (tcsShaderFile != nullptr)
+		{
+			std::ifstream tcosShaderFile(tcsShaderFile);
+			std::stringstream tcsshaderstream;
+			tcsshaderstream << tcosShaderFile.rdbuf();
+			tcosShaderFile.close();
+			tcsCode = tcsshaderstream.str();
+		}
+		if (tesShaderFile != nullptr)
+		{
+			std::ifstream tevsShaderFile(tesShaderFile);
+			std::stringstream tesshaderstream;
+			tesshaderstream << tevsShaderFile.rdbuf();
+			tevsShaderFile.close();
+			tesCode = tesshaderstream.str();
+		}
 	}
 	catch (std::exception e)
 	{
@@ -128,9 +163,11 @@ shader resource_manager::loadShaderFromFile(const char* vShaderFile, const char*
 	const char* vShaderCode = vertexCode.c_str();
 	const char* fShaderCode = fragmentCode.c_str();
 	const char* gShaderCode = geometryCode.c_str();
+	const char* tcsShaderCode = tcsCode.c_str();
+	const char* tesShaderCode = tesCode.c_str();
 	// 2. now create shader object from source code
 	shader shader;
-	shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
+	shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr, tcsShaderFile != nullptr ? tcsShaderCode : nullptr, tesShaderFile != nullptr ? tesShaderCode : nullptr);
 	return shader;
 }
 

@@ -6,7 +6,7 @@
 struct transform
 {
 	// Local space information
-	glm::vec3 pos = {0.0f, 0.0f, 0.0f};
+	glm::vec4 pos = {0.0f, 0.0f, 0.0f, 1.0f};
 	glm::vec3 eulerRot = {0.0f, 0.0f, 0.0f}; // In degrees
 	glm::vec3 scale = {1.0f, 1.0f, 1.0f};
 
@@ -25,7 +25,7 @@ protected:
 		const glm::mat4 rotationMatrix = transformY * transformX * transformZ;
 
 		// translation * rotation * scale (also know as TRS matrix)
-		return glm::translate(glm::mat4(1.0f), pos) * rotationMatrix * glm::scale(glm::mat4(1.0f), scale);
+		return glm::translate(glm::mat4(1.0f), glm::vec3(pos)) * rotationMatrix * glm::scale(glm::mat4(1.0f), scale);
 	}
 
 public:
@@ -35,7 +35,7 @@ public:
 		modelMatrix = parentGlobalModelMatrix * GetLocalModelMatrix();
 	}
 
-	void SetLocalPosition(const glm::vec3& newPosition)
+	void SetLocalPosition(const glm::vec4& newPosition)
 	{
 		pos = newPosition;
 	}
@@ -50,12 +50,12 @@ public:
 		scale = newScale;
 	}
 
-	const glm::vec3& GetGlobalPosition() const
+	const glm::vec4& GetGlobalPosition() const
 	{
 		return modelMatrix[3];
 	}
 
-	const glm::vec3& GetLocalPosition() const
+	const glm::vec4& GetLocalPosition() const
 	{
 		return pos;
 	}

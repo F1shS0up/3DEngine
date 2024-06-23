@@ -4,6 +4,8 @@
 #include "engine.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtx/norm.hpp"
+#include "material.h"
 #include "resource_manager.h"
 #include "shader.h"
 #include "texture.h"
@@ -13,74 +15,20 @@
 
 extern Coordinator gCoordinator;
 
-void material_lit::Init(shader* s)
-{
-	s->SetInteger("material.albedoMap", 0, true);
-	s->SetInteger("material.normalMap", 1);
-	s->SetInteger("material.metallicMap", 2);
-	s->SetInteger("material.roughnessMap", 3);
-	s->SetInteger("material.aoMap", 4);
-	if (albedoMap == nullptr)
-	{
-		albedoMap = resource_manager::GetTexture("DEFAULT");
-	}
-	if (metallicMap == nullptr)
-	{
-		metallicMap = resource_manager::GetTexture("DEFAULT");
-	}
-	if (roughnessMap == nullptr)
-	{
-		roughnessMap = resource_manager::GetTexture("DEFAULT");
-	}
-	if (aoMap == nullptr)
-	{
-		aoMap = resource_manager::GetTexture("DEFAULT");
-	}
-	if (normalMap == nullptr)
-	{
-		normalMap = resource_manager::GetTexture("DEFAULT_NORMAL_MAP");
-	}
-}
-
-void material_lit::Set(shader* s)
-{
-	s->SetFloat("uvMultiplier", uvMultiplier, true);
-	s->SetVector3f("material.albedo", albedo);
-	s->SetFloat("material.metallic", metallic);
-	s->SetFloat("material.roughness", roughness);
-	glActiveTexture(GL_TEXTURE0);
-	albedoMap->Bind();
-	glActiveTexture(GL_TEXTURE1);
-	normalMap->Bind();
-	glActiveTexture(GL_TEXTURE2);
-	metallicMap->Bind();
-	glActiveTexture(GL_TEXTURE3);
-	roughnessMap->Bind();
-	glActiveTexture(GL_TEXTURE4);
-	aoMap->Bind();
-}
-
-void material_unlit::Init(shader* s)
-{
-	s->SetInteger("material.map", 0, true);
-}
-
-void material_unlit::Set(shader* s)
-{
-	s->SetFloat("uvMultiplier", uvMultiplier, true);
-	s->SetVector3f("material.ambient", ambient);
-	glActiveTexture(GL_TEXTURE0);
-	map->Bind();
-}
 void mesh_renderer_system::Init()
 {
 	for (const auto& entity : mEntities)
 	{
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
-		renderer.mat->Init(renderer.shader);
+		for (auto& mesh : renderer.m->meshes)
+		{
+			if (mesh->materialIndex >= renderer.materials.size()) mesh->materialIndex = 0;
+
+			renderer.materials[mesh->materialIndex]->Init();
+		}
 	}
 }
-void mesh_renderer_system::RenderUsingShader(shader* s)
+void mesh_renderer_system::RenderShadowMap(shader* s)
 {
 	for (const auto& entity : mEntities)
 	{
@@ -89,41 +37,77 @@ void mesh_renderer_system::RenderUsingShader(shader* s)
 
 		glm::mat4 model = t.GetModelMatrix();
 		s->SetMatrix4("model", model, true);
-		renderer.m->Render(s);
+		for (auto& mesh : renderer.m->meshes)
+		{
+			if (mesh->castsShadow == false) continue;
+			mesh->Render(s);
+		}
 	}
+}
+bool CompareMeshPositions(const mesh* a, const mesh* b)
+{
+	return a->sqrDistance > b->sqrDistance;
+}
+
+bool CompareMeshRenderOrder(const Entity a, const Entity b)
+{
+	auto& renderera = gCoordinator.GetComponent<mesh_renderer>(a);
+	auto& rendererb = gCoordinator.GetComponent<mesh_renderer>(b);
+
+	return renderera.sqrDistance > rendererb.sqrDistance;
 }
 void mesh_renderer_system::Update()
 {
-	int meshesRendered = 0;
+	float time = glfwGetTime();
+	orderedRenders.clear();
+	std::copy(mEntities.begin(), mEntities.end(), std::back_inserter(orderedRenders));
 	for (const auto& entity : mEntities)
 	{
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
 		auto& t = gCoordinator.GetComponent<transform>(entity);
-		if (!renderer.m->vol->IsOnFrustum(engine::Instance()->cameraSystem.GetCurrentCamera()->cameraFrustum, t))
+
+		renderer.sqrDistance = glm::length2(engine::Instance()->cameraSystem.GetCurrentCamera()->position - t.GetGlobalPosition());
+
+		for (auto& m : renderer.m->meshes)
 		{
-			renderer.visible = false;
+			if (!m->bv->IsOnFrustum(engine::Instance()->cameraSystem.GetCurrentCamera()->cameraFrustum, t))
+			{
+				renderer.visibleMeshes[m->name] = true;
+			}
+			else
+			{
+				renderer.visibleMeshes[m->name] = true;
+			}
+			m->sqrDistance = glm::length2(engine::Instance()->cameraSystem.GetCurrentCamera()->position - m->averagePosition * t.GetModelMatrix());
 		}
-		else
-		{
-			renderer.visible = true;
-			meshesRendered++;
-		}
+
+		std::sort(renderer.m->meshes.begin(), renderer.m->meshes.end(), CompareMeshPositions);
 	}
 
-	std::cout << meshesRendered << " meshes rendered" << std::endl;
+	std::sort(orderedRenders.begin(), orderedRenders.end(), CompareMeshRenderOrder);
+	float endTime = glfwGetTime();
 }
-void mesh_renderer_system::Render()
+void mesh_renderer_system::Render(bool transparentPass)
 {
-	for (const auto& entity : mEntities)
+	float time = glfwGetTime();
+	for (const auto& entity : orderedRenders)
 	{
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
-		if (renderer.visible == false) continue;
 
 		auto& t = gCoordinator.GetComponent<transform>(entity);
 
 		glm::mat4 model = t.GetModelMatrix();
-		renderer.shader->SetMatrix4("model", model, true);
-		renderer.mat->Set(renderer.shader);
-		renderer.m->Render(renderer.shader);
+		for (auto& mesh : renderer.m->meshes)
+		{
+			if (renderer.visibleMeshes[mesh->name] == false) continue;
+			if ((dynamic_cast<transparent_lit*>(renderer.materials[mesh->materialIndex]) == nullptr) == transparentPass)
+			{
+				continue;
+			}
+			renderer.materials[mesh->materialIndex]->s->SetMatrix4("model", model, true);
+			renderer.materials[mesh->materialIndex]->Set();
+			mesh->Render(renderer.materials[mesh->materialIndex]->s);
+		}
 	}
+	float endTime = glfwGetTime();
 }

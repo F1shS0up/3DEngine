@@ -15,7 +15,7 @@ private:
 
 public:
 	frustum cameraFrustum;
-	glm::vec3 position;
+	glm::vec4 position;
 	glm::vec3 front;
 	glm::vec3 right;
 	glm::vec3 up;
@@ -30,12 +30,12 @@ public:
 	int fboTargetOffsetX, fboTargetOffsetY;
 	int fboTargetWidth, fboTargetHeight;
 
-	camera(int outputWidth, int outputHeight, float nearPlane, float farPlane, float fov, glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), float pitch = 0, float yaw = 0,
+	camera(int outputWidth, int outputHeight, float nearPlane, float farPlane, float fov, glm::vec4 position = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), float pitch = 0, float yaw = 0,
 		   glm::vec3 worldUp = glm::vec3(0.0f, 1.0f, 0.0f));
 
 	void ComputeViewMatrix()
 	{
-		view = glm::lookAt(position, position + front, up);
+		view = glm::lookAt(glm::vec3(position), glm::vec3(position) + front, up);
 	}
 
 	void SetRotation(float pitch, float yaw, float roll)

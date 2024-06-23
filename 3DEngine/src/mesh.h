@@ -1,8 +1,7 @@
 #pragma once
 #include "frustum.h"
-#include "glm/glm.hpp"
 
-#include <vector>
+#include <glm/glm.hpp>
 
 struct vertex
 {
@@ -14,17 +13,15 @@ struct vertex
 };
 struct mesh
 {
-	std::vector<vertex> vertices;
+	virtual void Init();
+	virtual void Render(class shader* s);
+	std::string name;
+	bounding_volume* bv;
+	vertex* vertices;
+	int vertexCount;
+	glm::vec4 averagePosition;
+	float sqrDistance;
 	unsigned int VAO, VBO;
-	bounding_volume* vol;
-	mesh() = default;
-	mesh(const char* path)
-	{
-		LoadOBJ(path, vertices);
-		InitRenderData();
-	}
-
-	bool LoadOBJ(const char* path, std::vector<vertex>& vertices);
-	void InitRenderData();
-	void Render(class shader* s);
+	int materialIndex = 0;
+	bool castsShadow = false;
 };

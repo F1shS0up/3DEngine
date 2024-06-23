@@ -16,8 +16,8 @@ public:
 	// use/activate the shader
 	shader& Use();
 
-	void Compile(const char* vertexSource, const char* fragmentSource,
-				 const char* geometrySource = nullptr); // note: geometry source code is optional
+	void Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource = nullptr, const char* tessalationControlSource = nullptr,
+				 const char* tessalationEvaluationSource = nullptr); // note: geometry source code is optional
 	// utility functions
 	void SetFloat(const char* name, float value, bool useShader = false);
 	void SetFloatArray(const char* name, float* value, int count, bool useShader = false);

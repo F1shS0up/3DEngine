@@ -1,7 +1,7 @@
 #ifndef RESOURCE_MANAGER_H
 #define RESOURCE_MANAGER_H
 
-#include "mesh.h"
+#include "model.h"
 #include "shader.h"
 #include "texture.h"
 
@@ -21,10 +21,10 @@ public:
 	static std::map<std::string, shader> shaders;
 	static std::map<std::string, texture2D> textures;
 	static std::map<std::string, unsigned int> cubemaps;
-	static std::map<std::string, mesh> meshes;
+	static std::map<std::string, model> models;
 	// loads (and generates) a shader program from file loading vertex, fragment (and geometry)
 	// shader's source code. If gShaderFile is not nullptr, it also loads a geometry shader
-	static shader* LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, std::string name);
+	static shader* LoadShader(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile, const char* vcShaderFile, const char* veShaderFile, std::string name);
 	// retrieves a stored sader
 	static shader* GetShader(std::string name);
 	// loads (and generates) a texture from file
@@ -32,8 +32,10 @@ public:
 	// retrieves a stored texture
 	static texture2D* GetTexture(std::string name);
 
-	static mesh* LoadMesh(const char* file, std::string name);
-	static mesh* GetMesh(std::string name);
+	static model* LoadModel(const char* file, std::string name, float verticesScalar = 1.0f);
+	static model* LoadModelFromBinary(const char* binaryFile, std::string name);
+	static model* LoadModelFromGLTF(const char* gltfFile, std::string name);
+	static model* GetModel(std::string name);
 
 	static unsigned int LoadCubemap(std::string folder, std::string extension, std::string name);
 	static unsigned int LoadCubemap(std::vector<std::string> faces, std::string name);
@@ -47,7 +49,7 @@ private:
 	// and functions should be publicly available (static).
 	resource_manager() { }
 	// loads and generates a shader from file
-	static shader loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr);
+	static shader loadShaderFromFile(const char* vShaderFile, const char* fShaderFile, const char* gShaderFile = nullptr, const char* tcsShaderFile = nullptr, const char* tesShaderFile = nullptr);
 	// loads a single texture from file
 	static texture2D loadTextureFromFile(const char* file, bool repeat = false);
 

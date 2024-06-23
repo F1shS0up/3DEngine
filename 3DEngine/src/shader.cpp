@@ -69,9 +69,9 @@ shader& shader::Use()
 	glUseProgram(ID);
 	return *this;
 }
-void shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource)
+void shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource, const char* tessalationControlSource, const char* tessalationEvaluationSource)
 {
-	unsigned int sVertex, sFragment, gShader;
+	unsigned int sVertex, sFragment, gShader, sTessalationControl, sTessalationEvaluation;
 	// vertex shader
 	sVertex = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(sVertex, 1, &vertexSource, NULL);
@@ -90,17 +90,35 @@ void shader::Compile(const char* vertexSource, const char* fragmentSource, const
 		glCompileShader(gShader);
 		CheckCompileErrors(gShader, "GEOMETRY");
 	}
+	if (tessalationControlSource != nullptr)
+	{
+		sTessalationControl = glCreateShader(GL_TESS_CONTROL_SHADER);
+		glShaderSource(sTessalationControl, 1, &tessalationControlSource, NULL);
+		glCompileShader(sTessalationControl);
+		CheckCompileErrors(sTessalationControl, "TESSALATION_CONTROL");
+	}
+	if (tessalationEvaluationSource != nullptr)
+	{
+		sTessalationEvaluation = glCreateShader(GL_TESS_EVALUATION_SHADER);
+		glShaderSource(sTessalationEvaluation, 1, &tessalationEvaluationSource, NULL);
+		glCompileShader(sTessalationEvaluation);
+		CheckCompileErrors(sTessalationEvaluation, "TESSALATION_EVALUATION");
+	}
 	// shader program
 	this->ID = glCreateProgram();
 	glAttachShader(this->ID, sVertex);
 	glAttachShader(this->ID, sFragment);
 	if (geometrySource != nullptr) glAttachShader(this->ID, gShader);
+	if (tessalationControlSource != nullptr) glAttachShader(this->ID, sTessalationControl);
+	if (tessalationEvaluationSource != nullptr) glAttachShader(this->ID, sTessalationEvaluation);
 	glLinkProgram(this->ID);
 	CheckCompileErrors(this->ID, "PROGRAM");
 	// delete the shaders as they're linked into our program now and no longer necessary
 	glDeleteShader(sVertex);
 	glDeleteShader(sFragment);
 	if (geometrySource != nullptr) glDeleteShader(gShader);
+	if (tessalationControlSource != nullptr) glDeleteShader(sTessalationControl);
+	if (tessalationEvaluationSource != nullptr) glDeleteShader(sTessalationEvaluation);
 }
 
 // utility uniform functions

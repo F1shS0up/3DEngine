@@ -19,6 +19,9 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp">
       <Filter>sources</Filter>
     </ClCompile>
@@ -28,10 +31,19 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\main.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\material.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.cpp">
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.cpp">
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp">
@@ -96,16 +108,31 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\json.hpp">
+      <Filter>headers</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.h">
       <Filter>headers</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\material.h">
+      <Filter>headers</Filter>
+    </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\options.h">
@@ -121,6 +148,9 @@
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.h">
+      <Filter>headers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\tiny_gltf.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\transform.h">

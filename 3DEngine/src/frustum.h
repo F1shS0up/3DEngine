@@ -174,5 +174,8 @@ struct aabb : public bounding_volume
 
 frustum CreateFrustumFromCamera(const class camera* cam);
 
+aabb GenerateAABB(const class model* m);
+sphere GenerateSphereBV(const class model* m);
+
 aabb GenerateAABB(const class mesh* m);
 sphere GenerateSphereBV(const class mesh* m);

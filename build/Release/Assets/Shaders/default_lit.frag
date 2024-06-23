@@ -13,6 +13,8 @@ struct Material
 	sampler2D roughnessMap;
 	float roughness;
 	sampler2D aoMap;
+	sampler2D heightMap;
+	float heightScale;
 };
 
 struct Light
@@ -28,6 +30,7 @@ in VS_OUT
 {
 	vec3 WorldPos;
 	vec2 TexCoords;
+	float invertedUVMultiplier;
 	mat3 TBN;
 	vec4 FragPosLightSpace;
 }
@@ -38,8 +41,8 @@ uniform Material material;
 uniform Light lights[8];
 uniform int lightCount;
 
-layout(binding = 5) uniform sampler2D shadowMap;
-layout(binding = 6) uniform samplerCubeArray cubeArray;
+layout(binding = 6) uniform sampler2D shadowMap;
+layout(binding = 7) uniform samplerCubeArray cubeArray;
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -78,7 +81,9 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
 // ----------------------------------------------------------------------------
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
-	return max(F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0), 0.0);
+	if (cosTheta > 1.0) cosTheta = 1.0;
+	float p = pow(1.0 - cosTheta, 5.0);
+	return F0 + (1.0 - F0) * p;
 }
 
 float DirectionalShadowCalculation(vec3 normal, Light dirLight)
@@ -123,7 +128,7 @@ float PointShadowCalculation(Light light, vec3 lightDir, int index)
 	float currentDepth = length(fragToLight);
 
 	float shadow = 0.0;
-	float bias = 0;
+	float bias = 0.05;
 	int samples = 20;
 	float viewDistance = length(viewPos - fs_in.WorldPos);
 	float diskRadius = (1.0 + (viewDistance / light.farPlane)) / 25.0;
@@ -138,17 +143,67 @@ float PointShadowCalculation(Light light, vec3 lightDir, int index)
 	return shadow;
 }
 
+vec2 ParallaxMapping(vec2 texCoords, vec3 viewDir)
+{
+	const float minLayers = 8;
+	const float maxLayers = 32;
+	float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
+	// calculate the size of each layer
+	float layerDepth = 1.0 / numLayers;
+	// depth of current layer
+	float currentLayerDepth = 0.0;
+	// the amount to shift the texture coordinates per layer (from vector P)
+	vec2 P = viewDir.xy / viewDir.z * material.heightScale;
+	vec2 deltaTexCoords = P / numLayers;
+
+	// get initial values
+	vec2 currentTexCoords = texCoords;
+	float currentDepthMapValue = texture(material.heightMap, currentTexCoords).r;
+
+	while (currentLayerDepth < currentDepthMapValue)
+	{
+		// shift texture coordinates along direction of P
+		currentTexCoords -= deltaTexCoords;
+		// get depthmap value at current texture coordinates
+		currentDepthMapValue = texture(material.heightMap, currentTexCoords).r;
+		// get depth of next layer
+		currentLayerDepth += layerDepth;
+	}
+
+	// get texture coordinates before collision (reverse operations)
+	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+	// get depth after and before collision for linear interpolation
+	float afterDepth = currentDepthMapValue - currentLayerDepth;
+	float beforeDepth = texture(material.heightMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+	// interpolation of texture coordinates
+	float weight = afterDepth / (afterDepth - beforeDepth);
+	vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+	return finalTexCoords;
+}
+
 void main()
 {
-	// properties
-	vec3 N = normalize(texture(material.normalMap, fs_in.TexCoords).rgb * 2.0 - 1.0);
-	N = normalize(mat3(fs_in.TBN) * N);
-	vec3 V = normalize(viewPos - fs_in.WorldPos);
+	vec3 tangentWorldPos = fs_in.WorldPos * fs_in.TBN;
+	vec3 tangentViewPos = viewPos * fs_in.TBN;
+	vec3 V = normalize(tangentViewPos - tangentWorldPos);
 
-	vec3 albedo = pow(texture(material.albedoMap, fs_in.TexCoords).rgb * material.albedo, vec3(2.2));
-	float metallic = texture(material.metallicMap, fs_in.TexCoords).r * material.metallic;
-	float roughness = texture(material.roughnessMap, fs_in.TexCoords).r * material.roughness;
-	float ao = texture(material.aoMap, fs_in.TexCoords).r;
+	vec2 texCoords = fs_in.TexCoords;
+	// if (material.heightScale > 0.0)
+	//{
+	//	texCoords = ParallaxMapping(fs_in.TexCoords, V);
+	//	vec2 realTexCoords = texCoords * fs_in.invertedUVMultiplier;
+	//	if (realTexCoords.x < 0.0 || realTexCoords.x > 1.0 || realTexCoords.y < 0.0 || realTexCoords.y > 1.0) discard;
+	// }
+	//  properties
+	vec3 N = normalize(texture(material.normalMap, texCoords).rgb * 2.0 - 1.0);
+
+	vec3 albedo = pow(texture(material.albedoMap, texCoords).rgb * material.albedo, vec3(2.2));
+	float metallic = texture(material.metallicMap, texCoords).r * material.metallic;
+	float roughness = texture(material.roughnessMap, texCoords).r * material.roughness;
+	float ao = texture(material.aoMap, texCoords).r;
 
 	// calculate reflectance at normal incidence; if dia-electric (like plastic) use F0
 	// of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)
@@ -160,11 +215,13 @@ void main()
 
 	for (int i = 0; i < lightCount; i++)
 	{
+		vec3 tangentLightPos = lights[i].position * fs_in.TBN;
+		float dist = length(i == 0 ? vec3(1) : (lights[i].position - fs_in.WorldPos));
+		if (lights[i].farPlane - dist < 0.0) continue;
 		// calculate per-light radiance
-		vec3 L = normalize(lights[i].position - fs_in.WorldPos);
+		vec3 L = normalize(tangentLightPos - tangentWorldPos);
 		vec3 H = normalize(V + L);
-		float distance = length(i == 0 ? vec3(1) : (lights[i].position - fs_in.WorldPos));
-		float attenuation = 1.0 / (distance * distance);
+		float attenuation = 1.0 / (dist * dist);
 		vec3 radiance = lights[i].color * attenuation;
 
 		// Cook-Torrance BRDF
@@ -200,7 +257,7 @@ void main()
 			shadow = PointShadowCalculation(lights[i], N, i - 1);
 		}
 		// add to outgoing radiance Lo
-		Lo += (kD * albedo / PI + specular) * radiance * NdotL * (1.0 - shadow); // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+		Lo += (kD * albedo / PI + specular) * radiance * NdotL * clamp(1.0 - shadow, 0, 1); // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 	}
 
 	vec3 ambient = vec3(0.03) * albedo * ao;
@@ -212,5 +269,5 @@ void main()
 	// gamma correct
 	color = pow(color, vec3(1.0 / 2.2));
 
-	FragColor = vec4(color, 1.0);
+	FragColor = vec4(color, 1);
 }

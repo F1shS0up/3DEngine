@@ -4,11 +4,15 @@ C:\Users\adamv\Documents\3DEngine\3DEngine\src\easing.cpp;C:\Users\adamv\Documen
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\engine.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\fps_camera.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\frustum.obj
+C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\gltf_mesh.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\key_holder.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\light_manager.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\main.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\main.obj
+C:\Users\adamv\Documents\3DEngine\3DEngine\src\material.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\material.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\mesh.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\mesh_renderer.obj
+C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\model.obj
+C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\obj_mesh.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\resource_manager.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\shader.obj
 C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.cpp;C:\Users\adamv\Documents\3DEngine\build\3DEngine.dir\Release\skybox.obj

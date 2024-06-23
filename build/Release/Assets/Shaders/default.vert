@@ -9,6 +9,7 @@ out VS_OUT
 {
 	vec3 WorldPos;
 	vec2 TexCoords;
+	float invertedUVMultiplier;
 	mat3 TBN;
 	vec4 FragPosLightSpace;
 }
@@ -23,6 +24,7 @@ uniform float uvMultiplier = 1.0;
 void main()
 {
 	vs_out.TexCoords = aTexCoords * uvMultiplier;
+	vs_out.invertedUVMultiplier = 1.0 / uvMultiplier;
 	vs_out.WorldPos = vec3(model * vec4(aPos, 1.0));
 	vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
 	vec3 B = normalize(vec3(model * vec4(aBitangent, 0.0)));
