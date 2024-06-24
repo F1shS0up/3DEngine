@@ -100,12 +100,12 @@ void mesh_renderer_system::Render(bool transparentPass)
 		for (auto& mesh : renderer.m->meshes)
 		{
 			if (renderer.visibleMeshes[mesh->name] == false) continue;
-			if ((dynamic_cast<transparent_lit*>(renderer.materials[mesh->materialIndex]) == nullptr) == transparentPass)
+			if ((dynamic_cast<transparent_pbr*>(renderer.materials[mesh->materialIndex]) == nullptr) == transparentPass)
 			{
 				continue;
 			}
 			renderer.materials[mesh->materialIndex]->s->SetMatrix4("model", model, true);
-			renderer.materials[mesh->materialIndex]->Set();
+			renderer.materials[mesh->materialIndex]->Set(0);
 			mesh->Render(renderer.materials[mesh->materialIndex]->s);
 		}
 	}

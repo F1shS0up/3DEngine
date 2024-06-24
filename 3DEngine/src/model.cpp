@@ -56,7 +56,6 @@ bool model::LoadModelObj(const char* path, float verticesScalar)
 			if (usemtlsInMesh > 0)
 			{
 				std::string name = lastOBJMesh->name + std::to_string(usemtlsInMesh);
-				std::cout << "Name: " << name << std::endl;
 				// New object
 				if (meshes.size() > 0)
 				{
@@ -75,7 +74,6 @@ bool model::LoadModelObj(const char* path, float verticesScalar)
 			int scan = fscanf(file, "%d", &materialIndex);
 			if (scan == 1)
 			{
-				std::cout << "Material index: " << materialIndex << std::endl;
 				meshes[meshes.size() - 1]->materialIndex = materialIndex;
 			}
 			else
@@ -180,7 +178,6 @@ bool model::LoadModelBinary(const char* binaryFile)
 	{
 		myfile.read((char*)&meshVertexCounts[i], sizeof(int));
 	}
-	std::cout << "Number of meshes: " << numberOfMeshes << std::endl;
 	meshes.reserve(numberOfMeshes);
 	for (int i = 0; i < numberOfMeshes; i++)
 	{
@@ -197,7 +194,6 @@ bool model::LoadModelBinary(const char* binaryFile)
 
 		meshes.push_back(m);
 	}
-	std::cout << "Meshes Size:" << meshes.size() << std::endl;
 }
 bool model::LoadModelGLTF(const char* gltfFile, float verticesScalar)
 {
@@ -231,19 +227,16 @@ bool model::LoadModelGLTF(const char* gltfFile, float verticesScalar)
 	Json::Value& bufferViews = json["bufferViews"];
 	Json::Value& accessors = json["accessors"];
 	Json::Value& meshesJ = json["meshes"];
+	Json::Value& nodes = json["nodes"];
 
-	int meshCount = meshesJ.size();
-	for (int i = 0; i < meshCount; i++)
+	int nodeCount = meshesJ.size();
+	for (int i = 0; i < nodeCount; i++)
 	{
-		std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
-		std::vector<glm::vec3> temp_vertices;
-		std::vector<glm::vec2> temp_uvs;
-		std::vector<glm::vec3> temp_normals;
-		std::vector<glm::vec3> temp_tangents;
-		std::vector<glm::vec3> temp_bitangents;
-
-		Json::Value& meshJ = meshesJ[i];
+		int meshIndex = nodes[i]["mesh"].asInt();
+		Json::Value& meshJ = meshesJ[meshIndex];
 		int primitiveCount = meshJ["primitives"].size();
+		int verticesCount = 0;
+		int indicesCount = 0;
 		for (int j = 0; j < primitiveCount; j++)
 		{
 			Json::Value& primitive = meshJ["primitives"][j];
@@ -251,70 +244,108 @@ bool model::LoadModelGLTF(const char* gltfFile, float verticesScalar)
 
 			Json::Value& indicesAccessor = accessors[primitive["indices"].asInt()];
 			Json::Value& positionAccessor = accessors[attributes["POSITION"].asInt()];
+
+			int iCount = indicesAccessor["count"].asInt();
+			int vCount = positionAccessor["count"].asInt();
+
+			verticesCount += vCount;
+			indicesCount += iCount;
+		}
+
+		int indicesOffset = 0;
+		int verticesOffset = 0;
+		int32_t* indices = new int32_t[indicesCount];
+		glm::vec3* temp_vertices = new glm::vec3[verticesCount];
+		glm::vec2* temp_uvs = new glm::vec2[verticesCount];
+		glm::vec3* temp_normals = new glm::vec3[verticesCount];
+		glm::vec4* temp_tangents = new glm::vec4[verticesCount];
+
+		for (int j = 0; j < primitiveCount; j++)
+		{
+			Json::Value& primitive = meshJ["primitives"][j];
+			Json::Value& attributes = primitive["attributes"];
+
+			bool useTangent = attributes.isMember("TANGENT");
+
+			Json::Value& indicesAccessor = accessors[primitive["indices"].asInt()];
+			Json::Value& positionAccessor = accessors[attributes["POSITION"].asInt()];
 			Json::Value& normalAccessor = accessors[attributes["NORMAL"].asInt()];
 			Json::Value& uvAccessor = accessors[attributes["TEXCOORD_0"].asInt()];
-			Json::Value& tangentAccessor = accessors[attributes["TANGENT"].asInt()];
 
 			Json::Value& indicesBufferView = bufferViews[indicesAccessor["bufferView"].asInt()];
 			Json::Value& positionalBufferView = bufferViews[positionAccessor["bufferView"].asInt()];
 			Json::Value& normalBufferView = bufferViews[normalAccessor["bufferView"].asInt()];
 			Json::Value& uvBufferView = bufferViews[uvAccessor["bufferView"].asInt()];
-			Json::Value& tangentBufferView = bufferViews[tangentAccessor["bufferView"].asInt()];
 
 			int indicesByteOffset = indicesBufferView["byteOffset"].asInt();
 			int positionalByteOffset = positionalBufferView["byteOffset"].asInt();
 			int normalByteOffset = normalBufferView["byteOffset"].asInt();
 			int uvByteOffset = uvBufferView["byteOffset"].asInt();
-			int tangentByteOffset = tangentBufferView["byteOffset"].asInt();
 
-			int indicesCount = indicesAccessor["count"].asInt();
-			int positionalCount = positionAccessor["count"].asInt();
-			int normalCount = normalAccessor["count"].asInt();
-			int uvCount = uvAccessor["count"].asInt();
-			int tangentCount = tangentAccessor["count"].asInt();
+			int iCount = indicesAccessor["count"].asInt();
+			int pCount = positionAccessor["count"].asInt();
 
-			std::string counts = "Positional Count: " + std::to_string(positionalCount) + "\nNormal Count: " + std::to_string(normalCount) + "\nUV Count: " + std::to_string(uvCount) +
-								 "\nTangent Count: " + std::to_string(tangentCount);
+			int indicesByteLength = indicesBufferView["byteLength"].asInt();
+			int positionalByteLength = positionalBufferView["byteLength"].asInt();
+			int normalByteLength = normalBufferView["byteLength"].asInt();
+			int uvByteLength = uvBufferView["byteLength"].asInt();
 
-			std::cout << counts << std::endl;
-
-			float* indicesData = (float*)(bin.data() + indicesByteOffset);
-			for (int k = 0; k < indicesCount; k++)
+			if (indicesByteLength / iCount == 2)
 			{
-				vertexIndices.push_back(indicesData[k]);
-				std::cout << indicesData[k] << std::endl;
+				int16_t* indicesData = (int16_t*)(bin.data() + indicesByteOffset);
+				std::copy(indicesData, indicesData + iCount, &indices[indicesOffset]);
+			}
+			else
+			{
+				int32_t* indicesData = (int32_t*)(bin.data() + indicesByteOffset);
+				std::copy(indicesData, indicesData + iCount, &indices[indicesOffset]);
 			}
 
 			float* positionData = (float*)(bin.data() + positionalByteOffset);
-			for (int k = 0; k < positionalCount; k++)
-			{
-				glm::vec3 position(positionData[k * 3], positionData[k * 3 + 1], positionData[k * 3 + 2]);
-				temp_vertices.push_back(position * verticesScalar);
-			}
+			memcpy(&temp_vertices[verticesOffset], positionData, positionalByteLength);
 
 			float* normalData = (float*)(bin.data() + normalByteOffset);
-			for (int k = 0; k < normalCount; k++)
-			{
-				glm::vec3 normal(normalData[k * 3], normalData[k * 3 + 1], normalData[k * 3 + 2]);
-				temp_normals.push_back(normal);
-			}
+			memcpy(&temp_normals[verticesOffset], normalData, normalByteLength);
 
 			float* uvData = (float*)(bin.data() + uvByteOffset);
-			for (int k = 0; k < uvCount; k++)
+			memcpy(&temp_uvs[verticesOffset], uvData, uvByteLength);
+
+			if (useTangent)
 			{
-				glm::vec2 uv(uvData[k * 2], uvData[k * 2 + 1]);
-				temp_uvs.push_back(uv);
+				int tangentAccessorInt = attributes["TANGENT"].asInt();
+				Json::Value& tangentAccessor = accessors[tangentAccessorInt];
+				Json::Value& tangentBufferView = bufferViews[tangentAccessor["bufferView"].asInt()];
+				int tangentByteOffset = tangentBufferView["byteOffset"].asInt();
+				int tangentByteLength = tangentBufferView["byteLength"].asInt();
+				float* tangentData = (float*)(bin.data() + tangentByteOffset);
+				memcpy(&temp_tangents[verticesOffset], tangentData, tangentByteLength);
 			}
 
-			float* tangentData = (float*)(bin.data() + tangentByteOffset);
-			for (int k = 0; k < tangentCount; k++)
-			{
-				glm::vec3 tangent(tangentData[k * 3], tangentData[k * 3 + 1], tangentData[k * 3 + 2]);
-				temp_tangents.push_back(tangent);
-			}
-			// Json::Value& indices = primitive["indices"];
-			// LoadMesh(bin.data(), positionAccessor, normalAccessor, uvAccessor, indices, verticesScalar, meshes);
+			verticesOffset += pCount;
+			indicesOffset += iCount;
 		}
+		gltf_mesh* activeMesh = new gltf_mesh();
+		activeMesh->name = meshJ["name"].asString();
+		activeMesh->indicesCount = indicesCount;
+		activeMesh->indices = new unsigned int[indicesCount];
+		std::copy(indices, indices + indicesCount, activeMesh->indices);
+
+		activeMesh->vertexCount = verticesCount;
+		activeMesh->vertices = new vertex[verticesCount];
+		for (unsigned int x = 0; x < verticesCount; x++)
+		{
+			glm::vec3 bitangent = glm::cross(temp_normals[x], (glm::vec3)temp_tangents[x]);
+			activeMesh->vertices[x] = vertex(temp_vertices[x] * verticesScalar, temp_uvs[x], temp_normals[x], temp_tangents[x], bitangent);
+		}
+
+		delete[] temp_vertices;
+		delete[] temp_uvs;
+		delete[] temp_normals;
+		delete[] temp_tangents;
+		delete[] indices;
+
+		activeMesh->Init();
+		meshes.push_back(activeMesh);
 	}
 	return true;
 }

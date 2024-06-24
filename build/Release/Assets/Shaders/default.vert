@@ -4,6 +4,7 @@ layout(location = 1) in vec2 aTexCoords;
 layout(location = 2) in vec3 aNormal;
 layout(location = 3) in vec3 aTangent;
 layout(location = 4) in vec3 aBitangent;
+layout(location = 5) in int aMaterialIndex; // Used for batching
 
 out VS_OUT
 {
@@ -12,6 +13,7 @@ out VS_OUT
 	float invertedUVMultiplier;
 	mat3 TBN;
 	vec4 FragPosLightSpace;
+	int materialIndex;
 }
 vs_out;
 
@@ -31,6 +33,8 @@ void main()
 	vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
 	vs_out.TBN = mat3(T, B, N);
 	vs_out.FragPosLightSpace = directionalLightSpaceMatrix * vec4(vs_out.WorldPos, 1.0);
+
+	vs_out.materialIndex = aMaterialIndex;
 
 	gl_Position = projection * view * vec4(vs_out.WorldPos, 1.0);
 }

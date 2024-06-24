@@ -62,10 +62,10 @@ model* resource_manager::LoadModelFromBinary(const char* binaryFile, std::string
 	return &models[name];
 }
 
-model* resource_manager::LoadModelFromGLTF(const char* gltfFile, std::string name)
+model* resource_manager::LoadModelFromGLTF(const char* gltfFile, std::string name, float verticesScalar)
 {
 	if (models.find(name) != models.end()) std::cout << "Mesh already exists: " << name << std::endl;
-	models[name] = model::LoadModelFromGLTF(gltfFile);
+	models[name] = model::LoadModelFromGLTF(gltfFile, verticesScalar);
 	std::cout << "Mesh loaded: " << name << std::endl;
 	return &models[name];
 }

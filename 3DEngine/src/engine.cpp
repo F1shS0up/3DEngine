@@ -116,7 +116,8 @@ void engine::Init()
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default.frag").c_str(), nullptr, nullptr, nullptr, "default");
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_unlit.frag").c_str(), nullptr, nullptr, nullptr, "default_unlit");
 	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_lit.frag").c_str(), nullptr, nullptr, nullptr, "default_lit");
-	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/transparent_lit.frag").c_str(), nullptr, nullptr, nullptr, "transparent_lit");
+	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/default_pbr.frag").c_str(), nullptr, nullptr, nullptr, "default_pbr");
+	resource_manager::LoadShader((assetPath + "Shaders/default.vert").c_str(), (assetPath + "Shaders/transparent_pbr.frag").c_str(), nullptr, nullptr, nullptr, "transparent_pbr");
 	resource_manager::LoadShader((assetPath + "Shaders/skybox.vert").c_str(), (assetPath + "Shaders/skybox.frag").c_str(), nullptr, nullptr, nullptr, "skybox");
 	resource_manager::LoadShader((assetPath + "Shaders/directional_light_depth.vert").c_str(), (assetPath + "Shaders/directional_light_depth.frag").c_str(), nullptr, nullptr, nullptr,
 								 "DIRECTIONAL_SHADOW_MAPPING");
@@ -129,8 +130,8 @@ void engine::Init()
 	// resource_manager::LoadModel((assetPath + "Engine/sphere.obj").c_str(), "SPHERE");
 	// resource_manager::LoadModel((assetPath + "Engine/plane.obj").c_str(), "PLANE");
 	startTime = glfwGetTime();
-	resource_manager::LoadModelFromBinary((assetPath + "Models/formula.bin").c_str(), "Nissan");
-	// resource_manager::LoadModelFromGLTF((assetPath + "Models/gtrrsas.glb").c_str(), "Nissan2");
+	// resource_manager::LoadModelFromBinary((assetPath + "Models/formula.bin").c_str(), "Nissan");
+	resource_manager::LoadModelFromGLTF((assetPath + "Models/gtrrsas.glb").c_str(), "Nissan2", .1f);
 	//  resource_manager::LoadModel((assetPath + "Models/NissanMat.obj").c_str(), "Nissan2");
 
 	endTime = glfwGetTime();
@@ -154,38 +155,38 @@ void engine::ECSInit()
 	gCoordinator.RegisterComponent<skybox>();
 
 	RegisterSystems();
-	material_lit* sand = new material_lit();
+	material_pbr* sand = new material_pbr();
 	sand->albedoMap = resource_manager::GetTexture("SandAlbedo");
 	sand->roughnessMap = resource_manager::GetTexture("SandRoughness");
 	sand->normalMap = resource_manager::GetTexture("SandNormal");
 	sand->aoMap = resource_manager::GetTexture("SandAO");
 
-	material_lit* spaceBlanket = new material_lit();
+	material_pbr* spaceBlanket = new material_pbr();
 	spaceBlanket->albedoMap = resource_manager::GetTexture("SpaceBlanketAlbedo");
 	spaceBlanket->roughnessMap = resource_manager::GetTexture("SpaceBlanketRoughness");
 	spaceBlanket->normalMap = resource_manager::GetTexture("SpaceBlanketNormal");
 	spaceBlanket->aoMap = resource_manager::GetTexture("SpaceBlanketAO");
 	spaceBlanket->metallicMap = resource_manager::GetTexture("SpaceBlanketMetallic");
 
-	transparent_lit* rusted = new transparent_lit();
+	transparent_pbr* rusted = new transparent_pbr();
 	rusted->albedoMap = resource_manager::GetTexture("rustedAlbedo");
 	rusted->metallicMap = resource_manager::GetTexture("rustedMetallic");
 	rusted->roughnessMap = resource_manager::GetTexture("rustedRoughness");
 	rusted->normalMap = resource_manager::GetTexture("rustedNormal");
 
-	transparent_lit* wood = new transparent_lit();
+	transparent_pbr* wood = new transparent_pbr();
 	wood->albedoMap = resource_manager::GetTexture("WoodAlbedo");
 	wood->roughnessMap = resource_manager::GetTexture("WoodRoughness");
 	wood->normalMap = resource_manager::GetTexture("WoodNormal");
 	wood->aoMap = resource_manager::GetTexture("WoodAO");
 
-	transparent_lit* fabric = new transparent_lit();
+	transparent_pbr* fabric = new transparent_pbr();
 	fabric->albedoMap = resource_manager::GetTexture("FabricAlbedo");
 	fabric->roughnessMap = resource_manager::GetTexture("FabricRoughness");
 	fabric->normalMap = resource_manager::GetTexture("FabricNormal");
 	fabric->aoMap = resource_manager::GetTexture("FabricAO");
 
-	material_lit* acousticFoam = new material_lit();
+	material_pbr* acousticFoam = new material_pbr();
 	acousticFoam->albedoMap = resource_manager::GetTexture("AcousticFoamAlbedo");
 	acousticFoam->roughnessMap = resource_manager::GetTexture("AcousticFoamRoughness");
 	acousticFoam->normalMap = resource_manager::GetTexture("AcousticFoamNormal");
@@ -194,76 +195,73 @@ void engine::ECSInit()
 	acousticFoam->heightMap = resource_manager::GetTexture("AcousticFoamHeight");
 	acousticFoam->uvMultiplier = 10;
 
-	material_lit* scifiPanelPlane = new material_lit();
+	material_pbr* scifiPanelPlane = new material_pbr();
 	scifiPanelPlane->albedoMap = resource_manager::GetTexture("BrickAlbedo");
 	scifiPanelPlane->normalMap = resource_manager::GetTexture("BrickNormal");
 	scifiPanelPlane->heightMap = resource_manager::GetTexture("BrickHeight");
 
-	material_lit* firstElement = new material_lit();
+	material_pbr* firstElement = new material_pbr();
 	firstElement->albedo = glm::vec3(1.0f, 1.0f, 1.0f);
 	firstElement->metallic = 0.65f;
 	firstElement->roughness = .5f;
 
-	material_lit* secondElement = new material_lit();
+	material_pbr* secondElement = new material_pbr();
 	secondElement->albedo = glm::vec3(0.8f, 0.0f, 0.0f);
 	secondElement->metallic = .8f;
 	secondElement->roughness = 0.25f;
 
-	transparent_lit* thirdElement = new transparent_lit();
+	transparent_pbr* thirdElement = new transparent_pbr();
 	thirdElement->albedo = glm::vec3(0.57f, 0.73f, 1.f);
 	thirdElement->metallic = 1.f;
 	thirdElement->roughness = 0.f;
 	thirdElement->alpha = 0.2f;
 
-	material_lit* fourthElement = new material_lit();
+	material_pbr* fourthElement = new material_pbr();
 	fourthElement->albedo = glm::vec3(.24f);
 	fourthElement->metallic = 0.1f;
 	fourthElement->roughness = 0.75f;
 
-	material_lit* fifthElement = new material_lit();
+	material_pbr* fifthElement = new material_pbr();
 	fifthElement->albedo = glm::vec3(0.8f, 0.58f, .0f);
 	fifthElement->metallic = .0f;
 	fifthElement->roughness = .5f;
 
-	transparent_lit* sixthElement = new transparent_lit();
+	transparent_pbr* sixthElement = new transparent_pbr();
 	sixthElement->albedo = glm::vec3(0.0f, 0.0f, .0f);
 	sixthElement->roughness = .064f;
 	sixthElement->metallic = .92f;
 	sixthElement->alpha = .85f;
 
-	material_lit* seventhElement = new material_lit();
+	material_pbr* seventhElement = new material_pbr();
 	seventhElement->albedo = glm::vec3(0.8f, 0.4f, .0f);
 	seventhElement->metallic = .7f;
 	seventhElement->roughness = .5f;
 
-	material_lit* eighthElement = new material_lit();
+	material_pbr* eighthElement = new material_pbr();
 	eighthElement->albedo = glm::vec3(0.8f, 0.0f, .0f);
 	eighthElement->metallic = .1f;
 	eighthElement->roughness = .4f;
 
-	transparent_lit* ninthElement = new transparent_lit();
+	transparent_pbr* ninthElement = new transparent_pbr();
 	ninthElement->albedo = glm::vec3(0.8f, 0.0f, .0f);
 	ninthElement->metallic = .6f;
 	ninthElement->roughness = .22f;
 	ninthElement->alpha = .5f;
 
-	material_lit* tenthElement = new material_lit();
+	material_pbr* tenthElement = new material_pbr();
 	tenthElement->albedo = glm::vec3(0.8f, 0.77f, .47f);
 	tenthElement->metallic = .65f;
 	tenthElement->roughness = .1f;
 
-	material_lit* eleventhElement = new material_lit();
+	material_pbr* eleventhElement = new material_pbr();
 	eleventhElement->albedo = glm::vec3(0.4f, 0.0f, .0f);
 	eleventhElement->metallic = .0f;
 	eleventhElement->roughness = .82f;
 
 	material_lit* twelfthElement = new material_lit();
-	twelfthElement->albedo = glm::vec3(0.0f, 0.0f, 0.0f);
-	twelfthElement->metallic = .8f;
-	twelfthElement->roughness = .03f;
 
-	std::vector<material*> materials = {firstElement,	secondElement, thirdElement, fourthElement, fifthElement,	 sixthElement,
-										seventhElement, eighthElement, ninthElement, tenthElement,	eleventhElement, twelfthElement};
+	std::vector<material*> materials = {scifiPanelPlane, twelfthElement, twelfthElement, twelfthElement, fifthElement,	  sixthElement,
+										seventhElement,	 eighthElement,	 ninthElement,	 tenthElement,	 eleventhElement, twelfthElement};
 
 	// Entity sphere0 = gCoordinator.CreateEntity();
 	// gCoordinator.AddComponent(sphere0, transform {glm::vec4(-5, 0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
@@ -295,7 +293,7 @@ void engine::ECSInit()
 
 	Entity plane2 = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(plane2, transform {glm::vec4(0, 0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
-	gCoordinator.AddComponent(plane2, mesh_renderer {resource_manager::GetModel("Nissan"), materials});
+	gCoordinator.AddComponent(plane2, mesh_renderer {resource_manager::GetModel("Nissan2"), materials});
 
 	// Entity plane3 = gCoordinator.CreateEntity();
 	// gCoordinator.AddComponent(plane2, transform {glm::vec4(10, 0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
@@ -342,7 +340,8 @@ void engine::ECSInit()
 	blueMat->ambient = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	Entity directionalLight = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(directionalLight, directional_light(glm::vec3(0, -1, -.8f), 1.f, 100.f, 25.f, 10.f, true, glm::vec3(1.f, 1.f, 1.f)));
+	gCoordinator.AddComponent(directionalLight,
+							  directional_light(glm::vec3(0, -1, -.8f), 1.f, 100.f, 25.f, 1.f, true, glm::vec3(.1f, 0.f, .1f), glm::vec3(0.6f, 0.f, 0.6f), glm::vec3(0.7f, 0.f, 0.7f)));
 
 	Entity sky = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(sky, skybox {resource_manager::GetCubemap("skybox")});
@@ -405,7 +404,7 @@ void engine::RegisterSystems()
 
 void engine::Update()
 {
-	std::cout << 1.f / deltaTime << std::endl;
+	// std::cout << 1.f / deltaTime << std::endl;
 	MousePositionUpdate();
 	fpsCameraSystem->Update(deltaTime);
 	cameraMovementSystem->Update(deltaTime);
@@ -454,13 +453,18 @@ void engine::SetShaderVariables()
 	cameraSystem.GetCurrentCamera()->ComputeViewMatrix();
 	glm::mat4 view = cameraSystem.GetCurrentCamera()->view;
 	glm::mat4 projection = cameraSystem.GetCurrentCamera()->projection;
+
+	resource_manager::GetShader("default_pbr")->SetMatrix4("view", view, true);
+	resource_manager::GetShader("default_pbr")->SetMatrix4("projection", projection);
+	resource_manager::GetShader("default_pbr")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->position);
+
 	resource_manager::GetShader("default_lit")->SetMatrix4("view", view, true);
 	resource_manager::GetShader("default_lit")->SetMatrix4("projection", projection);
 	resource_manager::GetShader("default_lit")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->position);
 
-	resource_manager::GetShader("transparent_lit")->SetMatrix4("view", view, true);
-	resource_manager::GetShader("transparent_lit")->SetMatrix4("projection", projection);
-	resource_manager::GetShader("transparent_lit")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->position);
+	resource_manager::GetShader("transparent_pbr")->SetMatrix4("view", view, true);
+	resource_manager::GetShader("transparent_pbr")->SetMatrix4("projection", projection);
+	resource_manager::GetShader("transparent_pbr")->SetVector3f("viewPos", cameraSystem.GetCurrentCamera()->position);
 
 	resource_manager::GetShader("default_unlit")->SetMatrix4("view", view, true);
 	resource_manager::GetShader("default_unlit")->SetMatrix4("projection", projection);

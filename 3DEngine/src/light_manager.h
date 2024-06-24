@@ -15,23 +15,35 @@
 struct directional_light
 {
 	directional_light() = default;
-	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows = true, glm::vec3 color = glm::vec3(0.15f, 0.15f, 0.09f));
+	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows = true, glm::vec3 color = glm::vec3(1.f, 1.f, 1.f));
+	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows, glm::vec3 ambient, glm::vec3 diffuse,
+					  glm::vec3 specular = glm::vec3(1.f, 1.f, 1.f));
+
 	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
 	float nearPlane, farPlane;
 	float range = 10.0f;
 	float lightStrength; // multiplier
 	bool castShadows = true;
 
-	glm::vec3 color = glm::vec3(0.15f, 0.15f, 0.09f);
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
 
 	glm::mat4 view;
 	glm::vec3 position;
 };
 struct point_light
 {
+	point_light() = default;
+	point_light(float nearPlane, float farPlane, float lightStrength, bool castShadows = true, glm::vec3 color = glm::vec3(1.f, 1.f, 1.f)) :
+		near(nearPlane), far(farPlane), lightStrength(lightStrength), castShadows(castShadows), ambient(color * .1f), diffuse(color * .5f), specular(color) {};
+	point_light(float nearPlane, float farPlane, float lightStrength, bool castShadows, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular = glm::vec3(1.f, 1.f, 1.f)) :
+		near(nearPlane), far(farPlane), lightStrength(lightStrength), castShadows(castShadows), ambient(ambient), diffuse(diffuse), specular(specular) {};
 	float lightStrength; // multiplier
 	bool castShadows = true;
-	glm::vec3 color = glm::vec3(0.1f);
+	glm::vec3 ambient;
+	glm::vec3 diffuse;
+	glm::vec3 specular;
 
 	int shadowMapLevel;
 	float near = .1f, far = 100;
@@ -44,7 +56,7 @@ struct point_light_manager : public System
 	void Init();
 	void SetShaderVariables();
 	void RenderFromLightsPOV();
-	void SetShaderPerLightVariables(class shader* s, std::string& name, point_light& light, transform& t);
+	void SetShaderPerLightVariables(class shader* s, bool useOnlyOneColor, std::string& name, point_light& light, transform& t);
 	void SetDepthShaderVariables(point_light& light, transform& t);
 };
 
@@ -56,6 +68,7 @@ struct directional_light_manager : public System
 	void RenderFromLightsPOV();
 	void SetLightSpaceMatrix();
 	void SetShaderVariables();
+	void SetShaderPerLightVariables(class shader* s, bool useOnlyOneColor, std::string& name, directional_light& light);
 	glm::mat4 GetLightSpaceMatrix();
 
 private:

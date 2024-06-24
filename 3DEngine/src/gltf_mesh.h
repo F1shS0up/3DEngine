@@ -8,9 +8,10 @@ struct gltf_mesh : public mesh
 {
 	gltf_mesh() = default;
 
-	std::vector<unsigned int> indices;
+	unsigned int* indices;
+	int indicesCount;
 	unsigned int EBO;
 
 	void Init() override;
-	void Render(class shader* s) override;
+	void Render(shader* s) override;
 };

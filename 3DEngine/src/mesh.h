@@ -10,6 +10,7 @@ struct vertex
 	glm::vec3 normal;
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
+	int materialIndex = 0;
 };
 struct mesh
 {

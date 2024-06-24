@@ -34,7 +34,7 @@ public:
 
 	static model* LoadModel(const char* file, std::string name, float verticesScalar = 1.0f);
 	static model* LoadModelFromBinary(const char* binaryFile, std::string name);
-	static model* LoadModelFromGLTF(const char* gltfFile, std::string name);
+	static model* LoadModelFromGLTF(const char* gltfFile, std::string name, float verticesScalar = 1.0f);
 	static model* GetModel(std::string name);
 
 	static unsigned int LoadCubemap(std::string folder, std::string extension, std::string name);
