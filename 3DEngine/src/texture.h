@@ -21,6 +21,8 @@ public:
 	unsigned int Wrap_T;	 // wrapping mode on T axis
 	unsigned int Filter_Min; // filtering mode if texture pixels < screen pixels
 	unsigned int Filter_Max; // filtering mode if texture pixels > screen pixels
+
+	unsigned char* data;
 	// constructor (sets default texture modes)
 	texture2D();
 

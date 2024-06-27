@@ -103,5 +103,6 @@ public:
 
 struct transform_system : public System
 {
+	void OnEntityAdded(Entity entity) override;
 	void Update();
 };

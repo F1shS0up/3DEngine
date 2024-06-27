@@ -63,6 +63,151 @@ void material_pbr::Set(int index)
 	heightMap->Bind();
 }
 
+void material_pbr::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays)
+{
+	if (textureArrays.size() < 6)
+	{
+		std::cout << "Not enough texture arrays to add textures to" << std::endl;
+	}
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[0]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, albedoMap->Width, albedoMap->Height, 1, GL_RGB, GL_UNSIGNED_BYTE, albedoMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[1]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, normalMap->Width, normalMap->Height, 1, GL_RGB, GL_UNSIGNED_BYTE, normalMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[2]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, metallicMap->Width, metallicMap->Height, 1, GL_RGB, GL_UNSIGNED_BYTE, metallicMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[3]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, roughnessMap->Width, roughnessMap->Height, 1, GL_RGB, GL_UNSIGNED_BYTE, roughnessMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[4]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, aoMap->Width, aoMap->Height, 1, GL_RGB, GL_UNSIGNED_BYTE, aoMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[5]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, heightMap->Width, heightMap->Height, 1, GL_RGB, GL_UNSIGNED_BYTE, heightMap->data);
+}
+
+void material_pbr::FillData(int byteOffset, char* data) { }
+
+unsigned long long material_pbr::GetMaterialStorageSize()
+{
+	return 0;
+}
+
+std::vector<const char*> material_pbr::GetTextureArraysNames()
+{
+	return std::vector<const char*>();
+}
+
+void material_lit::Init()
+{
+	if (s == nullptr)
+	{
+		s = resource_manager::GetShader("default_lit");
+	}
+	s->SetInteger("material.diffuseMap", 0, true);
+	s->SetInteger("material.specularMap", 1);
+	s->SetInteger("material.normalMap", 2);
+
+	if (diffuseMap == nullptr)
+	{
+		diffuseMap = resource_manager::GetTexture("DEFAULT");
+	}
+	if (specularMap == nullptr)
+	{
+		specularMap = resource_manager::GetTexture("DEFAULT");
+	}
+
+	if (normalMap == nullptr)
+	{
+		normalMap = resource_manager::GetTexture("DEFAULT_NORMAL_MAP");
+	}
+}
+
+void material_lit::Set(int index)
+{
+	s->Use();
+	s->SetVector3f("material.diffuse", diffuse);
+	s->SetVector3f("material.specular", specular);
+	s->SetFloat("material.shininess", shininess);
+	glActiveTexture(GL_TEXTURE0);
+	diffuseMap->Bind();
+	glActiveTexture(GL_TEXTURE1);
+	specularMap->Bind();
+	glActiveTexture(GL_TEXTURE2);
+	normalMap->Bind();
+}
+
+void material_lit::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays)
+{
+	if (textureArrays.size() < 3)
+	{
+		std::cout << "Not enough texture arrays to add textures to" << std::endl;
+	}
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[0]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, diffuseMap->Width, diffuseMap->Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, diffuseMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[1]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, specularMap->Width, specularMap->Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, specularMap->data);
+	glBindTexture(GL_TEXTURE_2D_ARRAY, textureArrays[2]);
+	glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, index, normalMap->Width, normalMap->Height, 1, GL_RGBA, GL_UNSIGNED_BYTE, normalMap->data);
+}
+void material_lit::FillData(int byteOffset, char* data)
+{
+	struct uniform_data
+	{
+		alignas(16) glm::vec3 diffuse;
+		alignas(16) glm::vec3 specular;
+		float shininess;
+	};
+	uniform_data dat {diffuse, specular, shininess};
+
+	memcpy(&data[byteOffset], &dat, sizeof(uniform_data));
+}
+unsigned long long material_lit::GetMaterialStorageSize()
+{
+	struct uniform_data
+	{
+		alignas(16) glm::vec3 diffuse;
+		alignas(16) glm::vec3 specular;
+		float shininess;
+	};
+	return sizeof(uniform_data);
+}
+std::vector<const char*> material_lit::GetTextureArraysNames()
+{
+	return std::vector<const char*> {"materialTextures.diffuseMaps", "materialTextures.specularMaps", "materialTextures.normalMaps"};
+}
+void material_lit_no_textures::Init()
+{
+	if (s == nullptr)
+	{
+		s = resource_manager::GetShader("default_lit_no_textures");
+	}
+}
+void material_lit_no_textures::Set(int index) { }
+void material_lit_no_textures::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
+void material_lit_no_textures::FillData(int byteOffset, char* data)
+{
+	struct uniform_data
+	{
+		alignas(16) glm::vec3 diffuse;
+		alignas(16) glm::vec3 specular;
+		float shininess;
+	};
+	uniform_data dat {diffuse, specular, shininess};
+
+	memcpy(&data[byteOffset], &dat, sizeof(uniform_data));
+}
+unsigned long long material_lit_no_textures::GetMaterialStorageSize()
+{
+	struct uniform_data
+	{
+		alignas(16) glm::vec3 diffuse;
+		alignas(16) glm::vec3 specular;
+		float shininess;
+	};
+	return sizeof(uniform_data);
+}
+std::vector<const char*> material_lit_no_textures::GetTextureArraysNames()
+{
+	return std::vector<const char*>();
+}
 void material_unlit::Init()
 {
 	if (s == nullptr)
@@ -78,6 +223,20 @@ void material_unlit::Set(int index)
 	s->SetVector3f("material.ambient", ambient);
 	glActiveTexture(GL_TEXTURE0);
 	map->Bind();
+}
+
+void material_unlit::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
+
+void material_unlit::FillData(int byteOffset, char* data) { }
+
+unsigned long long material_unlit::GetMaterialStorageSize()
+{
+	return 0;
+}
+
+std::vector<const char*> material_unlit::GetTextureArraysNames()
+{
+	return std::vector<const char*>();
 }
 
 void transparent_pbr::Init()
@@ -140,42 +299,16 @@ void transparent_pbr::Set(int index)
 	heightMap->Bind();
 }
 
-void material_lit::Init()
+void transparent_pbr::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
+
+void transparent_pbr::FillData(int byteOffset, char* data) { }
+
+unsigned long long transparent_pbr::GetMaterialStorageSize()
 {
-	if (s == nullptr)
-	{
-		s = resource_manager::GetShader("default_lit");
-	}
-	s->SetInteger("material.diffuseMap", 0, true);
-	s->SetInteger("material.specularMap", 1);
-	s->SetInteger("material.normalMap", 2);
-
-	if (diffuseMap == nullptr)
-	{
-		diffuseMap = resource_manager::GetTexture("DEFAULT");
-	}
-	if (specularMap == nullptr)
-	{
-		specularMap = resource_manager::GetTexture("DEFAULT");
-	}
-
-	if (normalMap == nullptr)
-	{
-		normalMap = resource_manager::GetTexture("DEFAULT_NORMAL_MAP");
-	}
+	return 0;
 }
 
-void material_lit::Set(int index)
+std::vector<const char*> transparent_pbr::GetTextureArraysNames()
 {
-	s->Use();
-	s->SetVector3f("material.ambient", ambient);
-	s->SetVector3f("material.diffuse", diffuse);
-	s->SetVector3f("material.specular", specular);
-	s->SetFloat("material.shininess", shininess);
-	glActiveTexture(GL_TEXTURE0);
-	diffuseMap->Bind();
-	glActiveTexture(GL_TEXTURE1);
-	specularMap->Bind();
-	glActiveTexture(GL_TEXTURE2);
-	normalMap->Bind();
+	return std::vector<const char*>();
 }

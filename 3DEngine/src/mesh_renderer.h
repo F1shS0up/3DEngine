@@ -18,7 +18,7 @@ struct mesh_renderer
 struct mesh_renderer_system : public System
 {
 	std::vector<Entity> orderedRenders;
-	void Init();
+	void OnEntityAdded(Entity entity) override;
 	void RenderShadowMap(class shader* s);
 	void Update();
 	void Render(bool transparentPass);

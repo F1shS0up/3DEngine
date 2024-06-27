@@ -15,17 +15,22 @@
 
 extern Coordinator gCoordinator;
 
-void mesh_renderer_system::Init()
+void mesh_renderer_system::OnEntityAdded(Entity entity)
 {
-	for (const auto& entity : mEntities)
+	auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
+	for (auto& mesh : renderer.m->meshes)
 	{
-		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
-		for (auto& mesh : renderer.m->meshes)
-		{
-			if (mesh->materialIndex >= renderer.materials.size()) mesh->materialIndex = 0;
+		if (mesh->materialIndex >= renderer.materials.size()) mesh->materialIndex = 0;
 
-			renderer.materials[mesh->materialIndex]->Init();
-		}
+		renderer.materials[mesh->materialIndex]->Init();
+		mesh->s = renderer.materials[mesh->materialIndex]->s;
+
+		// if (std::find(shaderIDsUsing.begin(), shaderIDsUsing.end(), mesh->shaderID) == shaderIDsUsing.end())
+		//{
+		//	shaderIDsUsing.push_back(mesh->shaderID);
+		// }
+		//
+		// meshesUsingShaderID[mesh->shaderID].push_back(mesh);
 	}
 }
 void mesh_renderer_system::RenderShadowMap(shader* s)
@@ -35,8 +40,6 @@ void mesh_renderer_system::RenderShadowMap(shader* s)
 		auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
 		auto& t = gCoordinator.GetComponent<transform>(entity);
 
-		glm::mat4 model = t.GetModelMatrix();
-		s->SetMatrix4("model", model, true);
 		for (auto& mesh : renderer.m->meshes)
 		{
 			if (mesh->castsShadow == false) continue;

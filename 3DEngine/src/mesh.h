@@ -18,11 +18,16 @@ struct mesh
 	virtual void Render(class shader* s);
 	std::string name;
 	bounding_volume* bv;
+
 	vertex* vertices;
 	int vertexCount;
+	unsigned int* indices;
+	int indexCount;
+
 	glm::vec4 averagePosition;
 	float sqrDistance;
 	unsigned int VAO, VBO;
 	int materialIndex = 0;
-	bool castsShadow = false;
+	bool castsShadow = true;
+	class shader* s;
 };

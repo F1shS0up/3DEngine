@@ -4,6 +4,7 @@
 #include "Types.hpp"
 
 #include <cassert>
+#include <iostream>
 #include <memory>
 #include <unordered_map>
 
@@ -37,6 +38,7 @@ public:
 			const auto& system = pair.second;
 
 			system->mEntities.erase(entity);
+			system->OnEntityRemoved(entity);
 		}
 	}
 
@@ -50,11 +52,14 @@ public:
 
 			if ((entitySignature & systemSignature) == systemSignature)
 			{
+				int size = system->mEntities.size();
 				system->mEntities.insert(entity);
+				if (size < system->mEntities.size()) system->OnEntityAdded(entity);
 			}
 			else
 			{
 				system->mEntities.erase(entity);
+				system->OnEntityRemoved(entity);
 			}
 		}
 	}

@@ -260,6 +260,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\batch_rendering.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera_movement.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\easing.cpp" />
@@ -281,6 +282,7 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\stb_image.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\transform.cpp" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\batch_rendering.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera_movement.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\easing.h" />

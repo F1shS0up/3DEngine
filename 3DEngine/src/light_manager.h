@@ -3,31 +3,59 @@
 #include "glm/glm.hpp"
 #include "transform.h"
 
+#include <iostream>
 #include <string>
 
-#define MAX_POINT_LIGHTS 8
 #define POINT_SHADOW_MAP_WIDTH 1024
 #define POINT_SHADOW_MAP_HEIGHT 1024
 
 #define DIRECTIONAL_SHADOW_MAP_WIDTH 4096
 #define DIRECTIONAL_SHADOW_MAP_HEIGHT 4096
 
-struct directional_light
+struct uniform_light
 {
-	directional_light() = default;
-	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows = true, glm::vec3 color = glm::vec3(1.f, 1.f, 1.f));
-	directional_light(glm::vec3 direction, float nearPlane, float farPlane, float range, float lightStrength, bool castShadows, glm::vec3 ambient, glm::vec3 diffuse,
-					  glm::vec3 specular = glm::vec3(1.f, 1.f, 1.f));
+	alignas(16) glm::vec3 positionOrDirection;
+	alignas(16) glm::vec3 ambient;
+	alignas(16) glm::vec3 diffuse;
+	alignas(16) glm::vec3 specular;
 
-	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
+	float farPlane;
+
+	int castShadows;
+};
+struct light
+{
+	enum light_type
+	{
+		POINT,
+		DIRECTIONAL
+	};
+
+	light() = default;
+	light(float nearPlane, float farPlane, float lightStrength, light_type type, bool castShadows = true, glm::vec3 ambient = glm::vec3(.1f, .1f, .1f), glm::vec3 diffuse = glm::vec3(.5f, .5f, .5f),
+		  glm::vec3 specular = glm::vec3(1.f, 1.f, 1.f)) :
+		nearPlane(nearPlane), farPlane(farPlane), lightStrength(lightStrength), castShadows(castShadows), ambient(ambient), diffuse(diffuse), specular(specular), type(type) {};
+	~light() {};
 	float nearPlane, farPlane;
-	float range = 10.0f;
 	float lightStrength; // multiplier
 	bool castShadows = true;
 
 	glm::vec3 ambient;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
+
+	light_type type = DIRECTIONAL;
+};
+
+struct directional_light
+{
+	directional_light() = default;
+	directional_light(glm::vec3 direction, float range);
+
+	~directional_light() {};
+
+	glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
+	float range = 10.0f;
 
 	glm::mat4 view;
 	glm::vec3 position;
@@ -35,18 +63,9 @@ struct directional_light
 struct point_light
 {
 	point_light() = default;
-	point_light(float nearPlane, float farPlane, float lightStrength, bool castShadows = true, glm::vec3 color = glm::vec3(1.f, 1.f, 1.f)) :
-		near(nearPlane), far(farPlane), lightStrength(lightStrength), castShadows(castShadows), ambient(color * .1f), diffuse(color * .5f), specular(color) {};
-	point_light(float nearPlane, float farPlane, float lightStrength, bool castShadows, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular = glm::vec3(1.f, 1.f, 1.f)) :
-		near(nearPlane), far(farPlane), lightStrength(lightStrength), castShadows(castShadows), ambient(ambient), diffuse(diffuse), specular(specular) {};
-	float lightStrength; // multiplier
-	bool castShadows = true;
-	glm::vec3 ambient;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
+	~point_light() {};
 
 	int shadowMapLevel;
-	float near = .1f, far = 100;
 };
 struct point_light_manager : public System
 {
@@ -54,10 +73,10 @@ struct point_light_manager : public System
 	unsigned int SHADOW_MAP_FBO;
 
 	void Init();
-	void SetShaderVariables();
 	void RenderFromLightsPOV();
-	void SetShaderPerLightVariables(class shader* s, bool useOnlyOneColor, std::string& name, point_light& light, transform& t);
-	void SetDepthShaderVariables(point_light& light, transform& t);
+	void SetDepthShaderVariables(point_light& pl, light& l, transform& t);
+
+	void LinkShadowMap();
 };
 
 struct directional_light_manager : public System
@@ -67,9 +86,15 @@ struct directional_light_manager : public System
 	void Init();
 	void RenderFromLightsPOV();
 	void SetLightSpaceMatrix();
-	void SetShaderVariables();
-	void SetShaderPerLightVariables(class shader* s, bool useOnlyOneColor, std::string& name, directional_light& light);
+
 	glm::mat4 GetLightSpaceMatrix();
 
-private:
+	void LinkShadowMap();
+};
+
+struct light_manager : public System
+{
+	unsigned int SSBO;
+	void Init();
+	void SetShaderVariables();
 };

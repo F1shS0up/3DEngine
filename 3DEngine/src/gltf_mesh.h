@@ -7,9 +7,6 @@
 struct gltf_mesh : public mesh
 {
 	gltf_mesh() = default;
-
-	unsigned int* indices;
-	int indicesCount;
 	unsigned int EBO;
 
 	void Init() override;
