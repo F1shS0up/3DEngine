@@ -620,19 +620,19 @@ void engine::GetAssetPath()
 
 void engine::CreateFBO()
 {
-	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	glGenTextures(TEXTURE_COUNT, TEX);
+	glGenFramebuffers(1, &GBUFFER);
+	glBindFramebuffer(GL_FRAMEBUFFER, GBUFFER);
+	glGenTextures(TEXTURE_COUNT, GTEX);
 
 	for (int i = 0; i < TEXTURE_COUNT; i++)
 	{
-		glBindTexture(GL_TEXTURE_2D, TEX[i]);
+		glBindTexture(GL_TEXTURE_2D, GTEX[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, cameraSystem.GetCurrentCamera()->outputWidth, cameraSystem.GetCurrentCamera()->outputWidth, 0, GL_RGBA, GL_FLOAT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, TEX[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, GTEX[i], 0);
 	}
 
 	glGenRenderbuffers(1, &DEPTH);
@@ -640,8 +640,8 @@ void engine::CreateFBO()
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, cameraSystem.GetCurrentCamera()->outputWidth, cameraSystem.GetCurrentCamera()->outputWidth);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, DEPTH);
 
-	unsigned int attachments[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-	glDrawBuffers(2, attachments);
+	unsigned int attachments[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, attachments);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 void engine::UpdateResolution(int width, int height)

@@ -66,8 +66,8 @@ public:
 	window_info windowInfo;
 
 private:
-	static const unsigned int TEXTURE_COUNT = 2;
-	unsigned int FBO, DEPTH, TEX[TEXTURE_COUNT];
+	unsigned int GBUFFER, GDEPTH, GPOSITION, GNORMAL, GDIFFUSE, GSPECULAR, GLIGHTCOORDS;
+	unsigned int FBO, QUAD_TEX;
 
 	unsigned int VAO, VBO;
 };
