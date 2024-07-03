@@ -7,12 +7,19 @@
 #include <unordered_map>
 #include <vector>
 
+enum render_type
+{
+	DYNAMIC,
+	STATIC
+};
 struct mesh_renderer
 {
 	model* m;
 	std::vector<material*> materials;
-	std::unordered_map<std::string, bool> visibleMeshes;
+	render_type type;
+
 	float sqrDistance = 0.0f; // Used for sorting
+	std::unordered_map<int, bool> visibleMeshes;
 };
 
 struct mesh_renderer_system : public System

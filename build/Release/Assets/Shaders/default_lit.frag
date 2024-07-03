@@ -1,16 +1,14 @@
 #version 460 core
 out vec4 FragColor;
-struct MaterialTextures
-{
-	sampler2DArray diffuseMaps;
-	sampler2DArray specularMaps;
-	sampler2DArray normalMaps;
-};
-struct MaterialValues
+
+struct Material
 {
 	vec3 diffuse;
 	vec3 specular;
 	float shininess;
+	sampler2D diffuseMap;
+	sampler2D specularMap;
+	sampler2D normalMap;
 };
 
 struct Light
@@ -40,14 +38,10 @@ const float linear = 0.09;
 const float quadratic = 0.032;
 
 uniform vec3 viewPos;
-uniform MaterialTextures materialTextures;
+uniform Material material;
 layout(std430, binding = 0) buffer Lights
 {
 	Light lights[];
-};
-layout(std430, binding = 1) buffer Materials
-{
-	MaterialValues materialValues[];
 };
 
 layout(binding = 3) uniform sampler2D shadowMap;
@@ -112,11 +106,11 @@ vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir)
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), materialValues[fs_in.materialIndex].shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	// combine results
-	vec3 ambient = light.ambient * texture(materialTextures.diffuseMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).rgb;
-	vec3 diffuse = light.diffuse * diff * texture(materialTextures.diffuseMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).rgb * materialValues[fs_in.materialIndex].diffuse;
-	vec3 specular = light.specular * spec * texture(materialTextures.specularMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).r * materialValues[fs_in.materialIndex].specular;
+	vec3 ambient = light.ambient * texture(material.diffuseMap, fs_in.TexCoords).rgb;
+	vec3 diffuse = light.diffuse * diff * texture(material.diffuseMap, fs_in.TexCoords).rgb * material.diffuse;
+	vec3 specular = light.specular * spec * texture(material.specularMap, fs_in.TexCoords).r * material.specular;
 
 	float shadow = DirectionalShadowCalculation(normal, lightDir);
 	vec3 lighting = vec3(ambient + (1.0 - shadow) * (diffuse + specular));
@@ -130,14 +124,14 @@ vec3 CalcPointLight(Light light, vec3 normal, vec3 viewDir, int index)
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), materialValues[fs_in.materialIndex].shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	// attenuation
 	float d = length(light.positionOrDirection - fs_in.WorldPos);
 	float attenuation = 1.0 / (constant + linear * d + quadratic * (d * d));
 	// combine results
-	vec3 ambient = light.ambient * texture(materialTextures.diffuseMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).rgb;
-	vec3 diffuse = light.diffuse * diff * texture(materialTextures.diffuseMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).rgb * materialValues[fs_in.materialIndex].diffuse;
-	vec3 specular = light.specular * spec * texture(materialTextures.specularMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).rgb * materialValues[fs_in.materialIndex].specular;
+	vec3 ambient = light.ambient * texture(material.diffuseMap, fs_in.TexCoords).rgb;
+	vec3 diffuse = light.diffuse * diff * texture(material.diffuseMap, fs_in.TexCoords).rgb * material.diffuse;
+	vec3 specular = light.specular * spec * texture(material.specularMap, fs_in.TexCoords).rgb * material.specular;
 	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;
@@ -150,7 +144,7 @@ vec3 CalcPointLight(Light light, vec3 normal, vec3 viewDir, int index)
 void main()
 {
 	// properties
-	vec3 N = normalize(texture(materialTextures.normalMaps, vec3(fs_in.TexCoords, fs_in.materialIndex)).rgb * 2.0 - 1.0);
+	vec3 N = normalize(texture(material.normalMap, fs_in.TexCoords).rgb * 2.0 - 1.0);
 	N = normalize(mat3(fs_in.TBN) * N);
 	vec3 viewDir = normalize(viewPos - fs_in.WorldPos);
 	// phase 1: Directional lighting

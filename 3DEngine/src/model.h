@@ -1,6 +1,18 @@
 #pragma once
 #include "mesh.h"
-
+struct obj_vertex
+{
+	unsigned int v, t, n;
+	glm::vec3 position;
+	glm::vec2 uv;
+	glm::vec3 normal;
+	glm::vec3 tangent;
+	glm::vec3 bitangent;
+	bool operator==(const obj_vertex& other) const
+	{
+		return v == other.v && t == other.t && n == other.n;
+	}
+};
 struct model
 {
 	std::vector<mesh*> meshes;
@@ -26,12 +38,7 @@ struct model
 
 private:
 	bool LoadModelObj(const char* path, float verticesScalar);
-	void CreateNewMesh(int& usemtlsInMesh, FILE* file, std::vector<unsigned int>& vertexIndices, std::vector<unsigned int>& uvIndices, std::vector<unsigned int>& normalIndices,
-					   std::vector<glm::vec3>& temp_vertices, std::vector<glm::vec2>& temp_uvs, std::vector<glm::vec3>& temp_normals, std::vector<glm::vec3>& temp_tangents,
-					   std::vector<glm::vec3>& temp_bitangents);
 	bool LoadModelBinary(const char* binaryFile);
 	bool LoadModelGLTF(const char* binaryFile, float verticesScalar);
-	void PassDataToMesh(std::vector<unsigned int>& vertexIndices, std::vector<unsigned int>& uvIndices, std::vector<unsigned int>& normalIndices, class obj_mesh* activeMesh,
-						std::vector<glm::vec3>& temp_vertices, std::vector<glm::vec2>& temp_uvs, std::vector<glm::vec3>& temp_normals, std::vector<glm::vec3>& temp_tangents,
-						std::vector<glm::vec3>& temp_bitangents);
+	void PassDataToMesh(std::vector<unsigned int>& indices, mesh* activeMesh, std::vector<obj_vertex>& objVertices);
 };

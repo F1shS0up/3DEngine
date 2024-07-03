@@ -1,14 +1,12 @@
 #include "engine.h"
 
 #include "GLFW/glfw3.h"
-#include "batch_rendering.h"
 #include "camera_movement.h"
 #include "fps_camera.h"
 #include "glad/glad.h"
 #include "light_manager.h"
 #include "material.h"
 #include "mesh_renderer.h"
-#include "obj_mesh.h"
 #include "resource_manager.h"
 #include "skybox.h"
 #include "stb_image.h"
@@ -31,7 +29,6 @@ std::shared_ptr<directional_light_manager> directionalLightManager;
 std::shared_ptr<skybox_system> skyboxSystem;
 std::shared_ptr<transform_system> transformSystem;
 std::shared_ptr<light_manager> lightManager;
-std::shared_ptr<batch_rendering_system> batchRenderingSystem;
 engine* engine::instance = nullptr;
 
 void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -128,14 +125,15 @@ void engine::Init()
 	resource_manager::LoadShader((assetPath + "Shaders/point_light_depth.vert").c_str(), (assetPath + "Shaders/point_light_depth.frag").c_str(), (assetPath + "Shaders/point_light_depth.geom").c_str(),
 								 nullptr, nullptr, "POINT_SHADOW_MAPPING");
 	endTime = glfwGetTime();
+	std::cout << "Loaded shaders in: " << endTime - startTime << "s" << std::endl;
 
 	// resource_manager::LoadModel((assetPath + "Models/backpack.obj").c_str(), "backpack");
 	// resource_manager::LoadModel((assetPath + "Models/box.obj").c_str(), "box");
 	// resource_manager::LoadModel((assetPath + "Engine/sphere.obj").c_str(), "SPHERE");
-	resource_manager::LoadModelFromGLTF((assetPath + "Models/plane.glb").c_str(), "PLANE");
+	// resource_manager::LoadModel((assetPath + "Engine/plane.obj").c_str(), "PLANE");
 	startTime = glfwGetTime();
 	// resource_manager::LoadModelFromBinary((assetPath + "Models/formula.bin").c_str(), "Nissan");
-	resource_manager::LoadModelFromGLTF((assetPath + "Models/formula.glb").c_str(), "Nissan2");
+	resource_manager::LoadModelFromBinary((assetPath + "Models/formula.bin").c_str(), "Nissan2");
 	//  resource_manager::LoadModel((assetPath + "Models/NissanMat.obj").c_str(), "Nissan2");
 
 	endTime = glfwGetTime();
@@ -144,7 +142,6 @@ void engine::Init()
 	resource_manager::LoadCubemap((assetPath + "Textures/skybox").c_str(), ".png", "skybox");
 
 	ECSInit();
-	std::cout << "ECS initialized." << std::endl;
 }
 
 void engine::ECSInit()
@@ -264,9 +261,13 @@ void engine::ECSInit()
 	eleventhElement->roughness = .82f;
 
 	material_lit_no_textures* twelfthElement = new material_lit_no_textures();
+	twelfthElement->diffuse = glm::vec3(0.8f, 0.8f, 0.8f);
+	material_lit_no_textures* twelfthElement2 = new material_lit_no_textures();
+	twelfthElement2->diffuse = glm::vec3(0.8f, 0.0f, 0.0f);
+	twelfthElement2->specular = glm::vec3(0.0f, 0.0f, 0.8f);
 
-	std::vector<material*> materials = {twelfthElement, twelfthElement, twelfthElement, twelfthElement, twelfthElement, twelfthElement,
-										twelfthElement, twelfthElement, twelfthElement, twelfthElement, twelfthElement, twelfthElement};
+	std::vector<material*> materials = {twelfthElement, twelfthElement2, twelfthElement, twelfthElement2, twelfthElement, twelfthElement2,
+										twelfthElement, twelfthElement2, twelfthElement, twelfthElement,  twelfthElement, twelfthElement};
 
 	// Entity sphere0 = gCoordinator.CreateEntity();
 	// gCoordinator.AddComponent(sphere0, transform {glm::vec4(-5, 0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
@@ -292,9 +293,9 @@ void engine::ECSInit()
 	// gCoordinator.AddComponent(sphere5, transform {glm::vec4(5, 0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
 	// gCoordinator.AddComponent(sphere5, mesh_renderer {resource_manager::GetModel("SPHERE"), {acousticFoam}});
 	//
-	Entity plane = gCoordinator.CreateEntity();
-	gCoordinator.AddComponent(plane, transform {glm::vec4(0, -8, 0, 1), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
-	gCoordinator.AddComponent(plane, mesh_renderer {resource_manager::GetModel("PLANE"), {twelfthElement}});
+	// Entity plane = gCoordinator.CreateEntity();
+	// gCoordinator.AddComponent(plane, transform {glm::vec4(0, -8, 0, 1), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100)});
+	// gCoordinator.AddComponent(plane, mesh_renderer {resource_manager::GetModel("PLANE"), {twelfthElement}});
 
 	Entity plane2 = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(plane2, transform {glm::vec4(0, 0, 0, 1), glm::vec3(0, 0, 0), glm::vec3(1, 1, 1)});
@@ -336,13 +337,13 @@ void engine::ECSInit()
 	gCoordinator.AddComponent(fpsCamera, fps_camera {cameraSystem.GetCurrentCamera()});
 	gCoordinator.AddComponent(fpsCamera, camera_movement {cameraSystem.GetCurrentCamera()});
 
-	material_unlit* redMat = new material_unlit();
-	redMat->map = resource_manager::GetTexture("DEFAULT");
-	redMat->ambient = glm::vec3(1.0f, 0.0f, 0.0f);
-
-	material_unlit* blueMat = new material_unlit();
-	blueMat->map = resource_manager::GetTexture("DEFAULT");
-	blueMat->ambient = glm::vec3(0.0f, 0.0f, 1.0f);
+	// material_unlit* redMat = new material_unlit();
+	// redMat->map = resource_manager::GetTexture("DEFAULT");
+	// redMat->ambient = glm::vec3(1.0f, 0.0f, 0.0f);
+	//
+	// material_unlit* blueMat = new material_unlit();
+	// blueMat->map = resource_manager::GetTexture("DEFAULT");
+	// blueMat->ambient = glm::vec3(0.0f, 0.0f, 1.0f);
 
 	Entity directionalLight = gCoordinator.CreateEntity();
 	gCoordinator.AddComponent(directionalLight, directional_light(glm::vec3(0, -1, -.8f), 25.f));
@@ -412,12 +413,6 @@ void engine::RegisterSystems()
 			(gCoordinator.GetComponentType<directional_light>() | (gCoordinator.GetComponentType<point_light>() & gCoordinator.GetComponentType<transform>())));
 	gCoordinator.SetSystemSignature<light_manager>(sig);
 	lightManager = gCoordinator.RegisterSystem<light_manager>();
-
-	sig = Signature();
-	sig.set(gCoordinator.GetComponentType<transform>());
-	sig.set(gCoordinator.GetComponentType<mesh_renderer>());
-	gCoordinator.SetSystemSignature<batch_rendering_system>(sig);
-	batchRenderingSystem = gCoordinator.RegisterSystem<batch_rendering_system>();
 }
 
 void engine::Update()
@@ -449,11 +444,10 @@ void engine::Render()
 	// pointLightManager->SetShaderVariables();
 	lightManager->SetShaderVariables();
 	SetShaderVariables();
-	batchRenderingSystem->Render();
-	// meshRendererSystem->Render(false);
+	meshRendererSystem->Render(false);
 	// meshRendererSystem->Render(true);
-	//  m->t.rotation = glm::vec3(0, glm::radians((float)counter), 0);
-	//  m->Render(resource_manager::GetShader("default"));
+	//   m->t.rotation = glm::vec3(0, glm::radians((float)counter), 0);
+	//   m->Render(resource_manager::GetShader("default"));
 	glDepthFunc(GL_LEQUAL);
 	skyboxSystem->Render();
 	glDepthFunc(GL_LESS);

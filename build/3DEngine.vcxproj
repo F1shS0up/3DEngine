@@ -260,14 +260,12 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\batch_rendering.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera_movement.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\easing.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp" />
-    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\main.cpp" />
@@ -275,14 +273,12 @@
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.cpp" />
-    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\stb_image.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\texture.cpp" />
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\transform.cpp" />
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\batch_rendering.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera_movement.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\easing.h" />
@@ -296,7 +292,6 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\engine.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\fps_camera.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.h" />
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\json.hpp" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\light_manager.h" />
@@ -304,8 +299,8 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\mesh_renderer.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.h" />
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\options.h" />
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\ordinal_suffix.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\shader.h" />
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\skybox.h" />

@@ -10,12 +10,10 @@ struct vertex
 	glm::vec3 normal;
 	glm::vec3 tangent;
 	glm::vec3 bitangent;
-	int materialIndex = 0;
 };
 struct mesh
 {
 	virtual void Init();
-	virtual void Render(class shader* s);
 	std::string name;
 	bounding_volume* bv;
 
@@ -26,8 +24,6 @@ struct mesh
 
 	glm::vec4 averagePosition;
 	float sqrDistance;
-	unsigned int VAO, VBO;
+	unsigned int VAO, VBO, EBO;
 	int materialIndex = 0;
-	bool castsShadow = true;
-	class shader* s;
 };

@@ -1,7 +1,6 @@
 #include "model.h"
 
-#include "gltf_mesh.h"
-#include "obj_mesh.h"
+#include "ordinal_suffix.h"
 
 #include "json/json.h"
 #include <fstream>
@@ -9,7 +8,8 @@
 
 bool model::LoadModelObj(const char* path, float verticesScalar)
 {
-	std::vector<unsigned int> vertexIndices, uvIndices, normalIndices;
+	std::vector<unsigned int> indices;
+	std::vector<obj_vertex> vertices;
 	std::vector<glm::vec3> temp_vertices;
 	std::vector<glm::vec2> temp_uvs;
 	std::vector<glm::vec3> temp_normals;
@@ -23,7 +23,7 @@ bool model::LoadModelObj(const char* path, float verticesScalar)
 	}
 
 	int usemtlsInMesh = 0;
-	obj_mesh* lastOBJMesh;
+	mesh* lastMesh;
 	while (1)
 	{
 		char lineHeader[32];
@@ -40,34 +40,28 @@ bool model::LoadModelObj(const char* path, float verticesScalar)
 			// New object
 			if (meshes.size() > 0)
 			{
-				PassDataToMesh(vertexIndices, uvIndices, normalIndices, (obj_mesh*)meshes[meshes.size() - 1], temp_vertices, temp_uvs, temp_normals, temp_tangents, temp_bitangents);
+				PassDataToMesh(indices, meshes[meshes.size() - 1], vertices);
 				meshes[meshes.size() - 1]->Init();
 			}
-			meshes.push_back(new obj_mesh());
+			meshes.push_back(new mesh());
 			meshes[meshes.size() - 1]->name = name;
-			lastOBJMesh = (obj_mesh*)meshes[meshes.size() - 1];
+			lastMesh = meshes[meshes.size() - 1];
 
-			vertexIndices.clear();
-			uvIndices.clear();
-			normalIndices.clear();
+			indices.clear();
 		}
 		else if (strcmp(lineHeader, "usemtl") == 0)
 		{
 			if (usemtlsInMesh > 0)
 			{
-				std::string name = lastOBJMesh->name + std::to_string(usemtlsInMesh);
+				std::string name = lastMesh->name + std::to_string(usemtlsInMesh);
 				// New object
 				if (meshes.size() > 0)
 				{
-					PassDataToMesh(vertexIndices, uvIndices, normalIndices, (obj_mesh*)meshes[meshes.size() - 1], temp_vertices, temp_uvs, temp_normals, temp_tangents, temp_bitangents);
+					PassDataToMesh(indices, meshes[meshes.size() - 1], vertices);
 					meshes[meshes.size() - 1]->Init();
 				}
-				meshes.push_back(new obj_mesh());
+				meshes.push_back(new mesh());
 				meshes[meshes.size() - 1]->name = name;
-
-				vertexIndices.clear();
-				uvIndices.clear();
-				normalIndices.clear();
 			}
 
 			int materialIndex;
@@ -136,15 +130,6 @@ bool model::LoadModelObj(const char* path, float verticesScalar)
 				printf("Can't calculate Tangents and Bitangents. UVs are too similar.\n");
 				continue;
 			}
-			vertexIndices.push_back(vertexIndex[0]);
-			vertexIndices.push_back(vertexIndex[1]);
-			vertexIndices.push_back(vertexIndex[2]);
-			uvIndices.push_back(uvIndex[0]);
-			uvIndices.push_back(uvIndex[1]);
-			uvIndices.push_back(uvIndex[2]);
-			normalIndices.push_back(normalIndex[0]);
-			normalIndices.push_back(normalIndex[1]);
-			normalIndices.push_back(normalIndex[2]);
 
 			float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
 			glm::vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y) * r;
@@ -156,9 +141,36 @@ bool model::LoadModelObj(const char* path, float verticesScalar)
 			temp_bitangents[vertexIndex[0] - 1] += bitangent;
 			temp_bitangents[vertexIndex[1] - 1] += bitangent;
 			temp_bitangents[vertexIndex[2] - 1] += bitangent;
+
+			auto i0 = std::find(vertices.begin(), vertices.end(), obj_vertex {vertexIndex[0], uvIndex[0], normalIndex[0]});
+			int realIndex0 = i0 - vertices.begin();
+			if (i0 == vertices.end())
+			{
+				vertices.push_back(obj_vertex {vertexIndex[0], uvIndex[0], normalIndex[0], temp_vertices[vertexIndex[0] - 1], temp_uvs[uvIndex[0] - 1], temp_normals[normalIndex[0] - 1],
+											   temp_tangents[vertexIndex[0] - 1], temp_bitangents[vertexIndex[0] - 1]});
+			}
+			indices.push_back(realIndex0);
+
+			auto i1 = std::find(vertices.begin(), vertices.end(), obj_vertex {vertexIndex[1], uvIndex[1], normalIndex[1]});
+			int realIndex1 = i1 - vertices.begin();
+			if (i1 == vertices.end())
+			{
+				vertices.push_back(obj_vertex {vertexIndex[1], uvIndex[1], normalIndex[1], temp_vertices[vertexIndex[1] - 1], temp_uvs[uvIndex[1] - 1], temp_normals[normalIndex[1] - 1],
+											   temp_tangents[vertexIndex[1] - 1], temp_bitangents[vertexIndex[1] - 1]});
+			}
+			indices.push_back(realIndex1);
+
+			auto i2 = std::find(vertices.begin(), vertices.end(), obj_vertex {vertexIndex[2], uvIndex[2], normalIndex[2]});
+			int realIndex2 = i2 - vertices.begin();
+			if (i2 == vertices.end())
+			{
+				vertices.push_back(obj_vertex {vertexIndex[2], uvIndex[2], normalIndex[2], temp_vertices[vertexIndex[2] - 1], temp_uvs[uvIndex[2] - 1], temp_normals[normalIndex[2] - 1],
+											   temp_tangents[vertexIndex[2] - 1], temp_bitangents[vertexIndex[2] - 1]});
+			}
+			indices.push_back(realIndex2);
 		}
 	}
-	PassDataToMesh(vertexIndices, uvIndices, normalIndices, (obj_mesh*)meshes[meshes.size() - 1], temp_vertices, temp_uvs, temp_normals, temp_tangents, temp_bitangents);
+	PassDataToMesh(indices, meshes[meshes.size() - 1], vertices);
 	meshes[meshes.size() - 1]->Init();
 }
 
@@ -174,20 +186,26 @@ bool model::LoadModelBinary(const char* binaryFile)
 
 	myfile.read((char*)&numberOfMeshes, sizeof(int));
 	int* meshVertexCounts = new int[numberOfMeshes];
+	int* meshIndicesCounts = new int[numberOfMeshes];
 	for (int i = 0; i < numberOfMeshes; i++)
 	{
 		myfile.read((char*)&meshVertexCounts[i], sizeof(int));
+		myfile.read((char*)&meshIndicesCounts[i], sizeof(int));
 	}
 	meshes.reserve(numberOfMeshes);
 	for (int i = 0; i < numberOfMeshes; i++)
 	{
-		obj_mesh* m = new obj_mesh();
+		mesh* m = new mesh();
 		m->vertices = new vertex[meshVertexCounts[i]];
 		m->vertexCount = meshVertexCounts[i];
+		m->indices = new unsigned int[meshIndicesCounts[i]];
+		m->indexCount = meshIndicesCounts[i];
 		char name[40];
 		myfile.read((char*)&name[0], sizeof(char) * 40);
 		m->name = name;
 		myfile.read((char*)&m->vertices[0], sizeof(vertex) * meshVertexCounts[i]);
+		std::cout << meshIndicesCounts[i] << std::endl;
+		myfile.read((char*)&m->indices[0], sizeof(unsigned int) * meshIndicesCounts[i]);
 		myfile.read((char*)&m->averagePosition, sizeof(glm::vec4));
 		myfile.read((char*)&m->materialIndex, sizeof(int));
 		m->Init();
@@ -212,7 +230,11 @@ bool model::LoadModelGLTF(const char* gltfFile, float verticesScalar)
 	Json::Reader reader;
 
 	Json::Value json;
-	if (!reader.parse(jsonStr, json)) std::cout << "Problem parsing assetData: " + jsonStr << std::endl;
+	if (!reader.parse(jsonStr, json))
+	{
+		std::cout << "Problem parsing assetData: " + jsonStr << std::endl;
+		return false;
+	}
 
 	// After reading from the json, the file cusor will automatically be at the start of the binary header
 
@@ -318,7 +340,7 @@ bool model::LoadModelGLTF(const char* gltfFile, float verticesScalar)
 				memcpy(&temp_tangents[0], tangentData, tangentByteLength);
 			}
 
-			gltf_mesh* activeMesh = new gltf_mesh();
+			mesh* activeMesh = new mesh();
 			activeMesh->materialIndex = mat;
 			activeMesh->name = meshJ["name"].asString();
 			activeMesh->indexCount = indexCount;
@@ -346,20 +368,20 @@ bool model::LoadModelGLTF(const char* gltfFile, float verticesScalar)
 	return true;
 }
 
-void model::PassDataToMesh(std::vector<unsigned int>& vertexIndices, std::vector<unsigned int>& uvIndices, std::vector<unsigned int>& normalIndices, obj_mesh* activeMesh,
-						   std::vector<glm::vec3>& temp_vertices, std::vector<glm::vec2>& temp_uvs, std::vector<glm::vec3>& temp_normals, std::vector<glm::vec3>& temp_tangents,
-						   std::vector<glm::vec3>& temp_bitangents)
+void model::PassDataToMesh(std::vector<unsigned int>& indices, mesh* activeMesh, std::vector<obj_vertex>& objVertices)
 {
-	int verticesCount = vertexIndices.size();
+	int verticesCount = objVertices.size();
 	activeMesh->vertices = new vertex[verticesCount];
 	activeMesh->vertexCount = verticesCount;
 	for (unsigned int i = 0; i < verticesCount; i++)
 	{
-		unsigned int vertexIndex = vertexIndices[i];
-		unsigned int uvIndex = uvIndices[i];
-		unsigned int normalIndex = normalIndices[i];
-		activeMesh->vertices[i] = vertex(temp_vertices[vertexIndex - 1], temp_uvs[uvIndex - 1], temp_normals[normalIndex - 1], temp_tangents[vertexIndex - 1], temp_bitangents[vertexIndex - 1]);
-		activeMesh->averagePosition += glm::vec4(temp_vertices[vertexIndex - 1], 1.0f);
+		activeMesh->vertices[i] = vertex(objVertices[i].position, objVertices[i].uv, objVertices[i].normal, objVertices[i].tangent, objVertices[i].bitangent);
+		activeMesh->averagePosition += glm::vec4(objVertices[i].position, 1.0f);
 	}
+
+	int indexCount = indices.size();
+	activeMesh->indices = new unsigned int[indexCount];
+	activeMesh->indexCount = indexCount;
+	std::copy(indices.begin(), indices.end(), activeMesh->indices);
 	activeMesh->averagePosition = activeMesh->averagePosition / (float)verticesCount;
 }

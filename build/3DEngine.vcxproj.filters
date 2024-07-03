@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\batch_rendering.cpp">
-      <Filter>sources</Filter>
-    </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.cpp">
       <Filter>sources</Filter>
     </ClCompile>
@@ -20,9 +17,6 @@
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.cpp">
-      <Filter>sources</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.cpp">
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\key_holder.cpp">
@@ -44,9 +38,6 @@
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.cpp">
-      <Filter>sources</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.cpp">
       <Filter>sources</Filter>
     </ClCompile>
     <ClCompile Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.cpp">
@@ -72,9 +63,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\batch_rendering.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\camera.h">
       <Filter>headers</Filter>
     </ClInclude>
@@ -114,9 +102,6 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\frustum.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\gltf_mesh.h">
-      <Filter>headers</Filter>
-    </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\json.hpp">
       <Filter>headers</Filter>
     </ClInclude>
@@ -138,10 +123,10 @@
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\model.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\obj_mesh.h">
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\options.h">
       <Filter>headers</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\options.h">
+    <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\ordinal_suffix.h">
       <Filter>headers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Users\adamv\Documents\3DEngine\3DEngine\src\resource_manager.h">

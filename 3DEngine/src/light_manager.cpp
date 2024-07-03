@@ -1,6 +1,5 @@
 #include "light_manager.h"
 
-#include "batch_rendering.h"
 #include "ecs/coordinator.hpp"
 #include "engine.h"
 #include "resource_manager.h"
@@ -13,7 +12,6 @@ extern Coordinator gCoordinator;
 extern std::shared_ptr<mesh_renderer_system> meshRendererSystem;
 extern std::shared_ptr<point_light_manager> pointLightManager;
 extern std::shared_ptr<directional_light_manager> directionalLightManager;
-extern std::shared_ptr<batch_rendering_system> batchRenderingSystem;
 void point_light_manager::Init()
 {
 	glGenTextures(1, &SHADOW_MAP_ARRAY);
@@ -178,7 +176,7 @@ void directional_light_manager::RenderFromLightsPOV()
 	glViewport(0, 0, DIRECTIONAL_SHADOW_MAP_WIDTH, DIRECTIONAL_SHADOW_MAP_HEIGHT);
 	glBindFramebuffer(GL_FRAMEBUFFER, DIRECTIONAL_DEPTH_FBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	batchRenderingSystem->RenderShadowMap(resource_manager::GetShader("DIRECTIONAL_SHADOW_MAPPING"));
+	meshRendererSystem->RenderShadowMap(resource_manager::GetShader("DIRECTIONAL_SHADOW_MAPPING"));
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 

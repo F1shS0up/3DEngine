@@ -2,8 +2,9 @@
 layout(location = 0) in vec3 aPos;
 
 uniform mat4 directionalLightSpaceMatrix;
+uniform mat4 model;
 
 void main()
 {
-	gl_Position = directionalLightSpaceMatrix * vec4(aPos, 1.0);
+	gl_Position = directionalLightSpaceMatrix * model * vec4(aPos, 1.0);
 }

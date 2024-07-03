@@ -6,22 +6,34 @@
 
 struct material
 {
+	virtual ~material() = default;
 	virtual void Init() = 0;
 	virtual void Set(int index) = 0;
-	virtual void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) = 0;
-	virtual void FillData(int byteOffset, char* data) = 0;
-	virtual unsigned long long GetMaterialStorageSize() = 0;
-	virtual std::vector<const char*> GetTextureArraysNames() = 0;
+	virtual const char* GetName() = 0;
+	// virtual void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) = 0;
+	// virtual void FillData(int byteOffset, char* data) = 0;
+	// virtual unsigned long long GetMaterialStorageSize() = 0;
+	// virtual std::vector<const char*> GetTextureArraysNames() = 0;
 	class shader* s;
+	unsigned int shaderID = -1;
 };
 struct material_pbr : public material
 {
-	void Init() override;
+	material_pbr()
+	{
+		Init();
+	}
+	~material_pbr() override = default;
 	void Set(int index) override;
-	void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
-	void FillData(int byteOffset, char* data) override;
-	unsigned long long GetMaterialStorageSize() override;
-	std::vector<const char*> GetTextureArraysNames() override;
+	void Init() override;
+	const char* GetName() override
+	{
+		return "material_pbr";
+	}
+	// void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
+	// void FillData(int byteOffset, char* data) override;
+	// unsigned long long GetMaterialStorageSize() override;
+	// std::vector<const char*> GetTextureArraysNames() override;
 
 	class texture2D* albedoMap;
 	glm::vec3 albedo = glm::vec3(1.0f);
@@ -37,12 +49,21 @@ struct material_pbr : public material
 };
 struct material_lit : public material
 {
-	void Init() override;
+	material_lit()
+	{
+		Init();
+	}
+	~material_lit() override = default;
 	void Set(int index) override;
-	void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
-	void FillData(int byteOffset, char* data) override;
-	unsigned long long GetMaterialStorageSize() override;
-	std::vector<const char*> GetTextureArraysNames() override;
+	void Init() override;
+	const char* GetName() override
+	{
+		return "material_lit";
+	}
+	// void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
+	// void FillData(int byteOffset, char* data) override;
+	// unsigned long long GetMaterialStorageSize() override;
+	// std::vector<const char*> GetTextureArraysNames() override;
 
 	glm::vec3 diffuse = glm::vec3(.5f);
 	class texture2D* diffuseMap = nullptr;
@@ -53,12 +74,21 @@ struct material_lit : public material
 };
 struct material_lit_no_textures : public material
 {
-	void Init() override;
+	material_lit_no_textures()
+	{
+		Init();
+	}
+	~material_lit_no_textures() override = default;
 	void Set(int index) override;
-	void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
-	void FillData(int byteOffset, char* data) override;
-	unsigned long long GetMaterialStorageSize() override;
-	std::vector<const char*> GetTextureArraysNames() override;
+	void Init() override;
+	const char* GetName() override
+	{
+		return "material_lit_no_textures";
+	}
+	// void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
+	// void FillData(int byteOffset, char* data) override;
+	// unsigned long long GetMaterialStorageSize() override;
+	// std::vector<const char*> GetTextureArraysNames() override;
 
 	glm::vec3 diffuse = glm::vec3(.5f);
 	glm::vec3 specular = glm::vec3(1.f);
@@ -66,12 +96,21 @@ struct material_lit_no_textures : public material
 };
 struct material_unlit : public material
 {
-	void Init() override;
+	material_unlit()
+	{
+		Init();
+	}
+	~material_unlit() override = default;
 	void Set(int index) override;
-	void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
-	void FillData(int byteOffset, char* data) override;
-	unsigned long long GetMaterialStorageSize() override;
-	std::vector<const char*> GetTextureArraysNames() override;
+	void Init() override;
+	const char* GetName() override
+	{
+		return "material_unlit";
+	}
+	// void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
+	// void FillData(int byteOffset, char* data) override;
+	// unsigned long long GetMaterialStorageSize() override;
+	// std::vector<const char*> GetTextureArraysNames() override;
 
 	glm::vec3 ambient = glm::vec3(1.0f);
 	class texture2D* map = nullptr;
@@ -79,12 +118,21 @@ struct material_unlit : public material
 };
 struct transparent_pbr : public material
 {
-	void Init() override;
+	transparent_pbr()
+	{
+		Init();
+	}
+	~transparent_pbr() override = default;
 	void Set(int index) override;
-	void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
-	void FillData(int byteOffset, char* data) override;
-	unsigned long long GetMaterialStorageSize() override;
-	std::vector<const char*> GetTextureArraysNames() override;
+	void Init() override;
+	const char* GetName() override
+	{
+		return "transparent_pbr";
+	}
+	// void AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) override;
+	// void FillData(int byteOffset, char* data) override;
+	// unsigned long long GetMaterialStorageSize() override;
+	// std::vector<const char*> GetTextureArraysNames() override;
 
 	class texture2D* albedoMap;
 	glm::vec3 albedo = glm::vec3(1.0f);

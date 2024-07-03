@@ -6,16 +6,14 @@
 
 void material_pbr::Init()
 {
-	if (s == nullptr)
-	{
-		s = resource_manager::GetShader("default_pbr");
-	}
-	s->SetInteger("material.albedoMap", 0, true);
-	s->SetInteger("material.normalMap", 1);
-	s->SetInteger("material.metallicMap", 2);
-	s->SetInteger("material.roughnessMap", 3);
-	s->SetInteger("material.aoMap", 4);
-	s->SetInteger("material.heightMap", 5);
+	s = resource_manager::GetShader("default_pbr");
+	shaderID = s->ID;
+	// s->SetInteger("material.albedoMap", 0, true);
+	// s->SetInteger("material.normalMap", 1);
+	// s->SetInteger("material.metallicMap", 2);
+	// s->SetInteger("material.roughnessMap", 3);
+	// s->SetInteger("material.aoMap", 4);
+	// s->SetInteger("material.heightMap", 5);
 	if (albedoMap == nullptr)
 	{
 		albedoMap = resource_manager::GetTexture("DEFAULT");
@@ -63,7 +61,7 @@ void material_pbr::Set(int index)
 	heightMap->Bind();
 }
 
-void material_pbr::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays)
+/* void material_pbr::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays)
 {
 	if (textureArrays.size() < 6)
 	{
@@ -93,17 +91,18 @@ unsigned long long material_pbr::GetMaterialStorageSize()
 std::vector<const char*> material_pbr::GetTextureArraysNames()
 {
 	return std::vector<const char*>();
-}
+} */
 
 void material_lit::Init()
 {
 	if (s == nullptr)
 	{
 		s = resource_manager::GetShader("default_lit");
+		shaderID = s->ID;
 	}
-	s->SetInteger("material.diffuseMap", 0, true);
-	s->SetInteger("material.specularMap", 1);
-	s->SetInteger("material.normalMap", 2);
+	// s->SetInteger("material.diffuseMap", 0, true);
+	// s->SetInteger("material.specularMap", 1);
+	// s->SetInteger("material.normalMap", 2);
 
 	if (diffuseMap == nullptr)
 	{
@@ -134,7 +133,7 @@ void material_lit::Set(int index)
 	normalMap->Bind();
 }
 
-void material_lit::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays)
+/* void material_lit::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays)
 {
 	if (textureArrays.size() < 3)
 	{
@@ -172,16 +171,20 @@ unsigned long long material_lit::GetMaterialStorageSize()
 std::vector<const char*> material_lit::GetTextureArraysNames()
 {
 	return std::vector<const char*> {"materialTextures.diffuseMaps", "materialTextures.specularMaps", "materialTextures.normalMaps"};
-}
+} */
 void material_lit_no_textures::Init()
 {
-	if (s == nullptr)
-	{
-		s = resource_manager::GetShader("default_lit_no_textures");
-	}
+	s = resource_manager::GetShader("default_lit_no_textures");
+	shaderID = s->ID;
 }
-void material_lit_no_textures::Set(int index) { }
-void material_lit_no_textures::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
+void material_lit_no_textures::Set(int index)
+{
+	s->Use();
+	s->SetVector3f("material.diffuse", diffuse);
+	s->SetVector3f("material.specular", specular);
+	s->SetFloat("material.shininess", shininess);
+}
+/* void material_lit_no_textures::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
 void material_lit_no_textures::FillData(int byteOffset, char* data)
 {
 	struct uniform_data
@@ -207,14 +210,12 @@ unsigned long long material_lit_no_textures::GetMaterialStorageSize()
 std::vector<const char*> material_lit_no_textures::GetTextureArraysNames()
 {
 	return std::vector<const char*>();
-}
+} */
 void material_unlit::Init()
 {
-	if (s == nullptr)
-	{
-		s = resource_manager::GetShader("default_unlit");
-	}
-	s->SetInteger("material.map", 0, true);
+	s = resource_manager::GetShader("default_unlit");
+	shaderID = s->ID;
+	// s->SetInteger("material.map", 0, true);
 }
 
 void material_unlit::Set(int index)
@@ -225,7 +226,7 @@ void material_unlit::Set(int index)
 	map->Bind();
 }
 
-void material_unlit::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
+/* void material_unlit::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
 
 void material_unlit::FillData(int byteOffset, char* data) { }
 
@@ -237,20 +238,18 @@ unsigned long long material_unlit::GetMaterialStorageSize()
 std::vector<const char*> material_unlit::GetTextureArraysNames()
 {
 	return std::vector<const char*>();
-}
+} */
 
 void transparent_pbr::Init()
 {
-	if (s == nullptr)
-	{
-		s = resource_manager::GetShader("transparent_pbr");
-	}
-	s->SetInteger("material.albedoMap", 0, true);
-	s->SetInteger("material.normalMap", 1);
-	s->SetInteger("material.metallicMap", 2);
-	s->SetInteger("material.roughnessMap", 3);
-	s->SetInteger("material.aoMap", 4);
-	s->SetInteger("material.heightMap", 5);
+	s = resource_manager::GetShader("transparent_pbr");
+	shaderID = s->ID;
+	// s->SetInteger("material.albedoMap", 0, true);
+	// s->SetInteger("material.normalMap", 1);
+	// s->SetInteger("material.metallicMap", 2);
+	// s->SetInteger("material.roughnessMap", 3);
+	// s->SetInteger("material.aoMap", 4);
+	// s->SetInteger("material.heightMap", 5);
 	if (albedoMap == nullptr)
 	{
 		albedoMap = resource_manager::GetTexture("DEFAULT");
@@ -298,7 +297,7 @@ void transparent_pbr::Set(int index)
 	glActiveTexture(GL_TEXTURE5);
 	heightMap->Bind();
 }
-
+/*
 void transparent_pbr::AddTexturesToArrays(int index, std::vector<unsigned int> textureArrays) { }
 
 void transparent_pbr::FillData(int byteOffset, char* data) { }
@@ -311,4 +310,4 @@ unsigned long long transparent_pbr::GetMaterialStorageSize()
 std::vector<const char*> transparent_pbr::GetTextureArraysNames()
 {
 	return std::vector<const char*>();
-}
+} */

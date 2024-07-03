@@ -17,21 +17,20 @@ extern Coordinator gCoordinator;
 
 void mesh_renderer_system::OnEntityAdded(Entity entity)
 {
-	auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
-	for (auto& mesh : renderer.m->meshes)
-	{
-		if (mesh->materialIndex >= renderer.materials.size()) mesh->materialIndex = 0;
-
-		renderer.materials[mesh->materialIndex]->Init();
-		mesh->s = renderer.materials[mesh->materialIndex]->s;
-
-		// if (std::find(shaderIDsUsing.begin(), shaderIDsUsing.end(), mesh->shaderID) == shaderIDsUsing.end())
-		//{
-		//	shaderIDsUsing.push_back(mesh->shaderID);
-		// }
-		//
-		// meshesUsingShaderID[mesh->shaderID].push_back(mesh);
-	}
+	// auto& renderer = gCoordinator.GetComponent<mesh_renderer>(entity);
+	// for (auto& mesh : renderer.m->meshes)
+	//{
+	//	if (mesh->materialIndex >= renderer.materials.size()) mesh->materialIndex = 0;
+	//
+	//	// mesh->s = renderer.materials[mesh->materialIndex]->s;
+	//
+	//	// if (std::find(shaderIDsUsing.begin(), shaderIDsUsing.end(), mesh->shaderID) == shaderIDsUsing.end())
+	//	//{
+	//	//	shaderIDsUsing.push_back(mesh->shaderID);
+	//	// }
+	//	//
+	//	// meshesUsingShaderID[mesh->shaderID].push_back(mesh);
+	//}
 }
 void mesh_renderer_system::RenderShadowMap(shader* s)
 {
@@ -42,8 +41,11 @@ void mesh_renderer_system::RenderShadowMap(shader* s)
 
 		for (auto& mesh : renderer.m->meshes)
 		{
-			if (mesh->castsShadow == false) continue;
-			mesh->Render(s);
+			s->Use();
+			s->SetMatrix4("model", t.GetModelMatrix(), true);
+			glBindVertexArray(mesh->VAO);
+			glDrawElements(GL_TRIANGLES, mesh->indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 		}
 	}
 }
@@ -71,15 +73,16 @@ void mesh_renderer_system::Update()
 
 		renderer.sqrDistance = glm::length2(engine::Instance()->cameraSystem.GetCurrentCamera()->position - t.GetGlobalPosition());
 
-		for (auto& m : renderer.m->meshes)
+		for (int i = 0; i < renderer.m->meshes.size(); i++)
 		{
+			auto& m = renderer.m->meshes[i];
 			if (!m->bv->IsOnFrustum(engine::Instance()->cameraSystem.GetCurrentCamera()->cameraFrustum, t))
 			{
-				renderer.visibleMeshes[m->name] = true;
+				renderer.visibleMeshes[i] = true;
 			}
 			else
 			{
-				renderer.visibleMeshes[m->name] = true;
+				renderer.visibleMeshes[i] = true;
 			}
 			m->sqrDistance = glm::length2(engine::Instance()->cameraSystem.GetCurrentCamera()->position - m->averagePosition * t.GetModelMatrix());
 		}
@@ -100,16 +103,21 @@ void mesh_renderer_system::Render(bool transparentPass)
 		auto& t = gCoordinator.GetComponent<transform>(entity);
 
 		glm::mat4 model = t.GetModelMatrix();
-		for (auto& mesh : renderer.m->meshes)
+		for (int i = 0; i < renderer.m->meshes.size(); i++)
 		{
-			if (renderer.visibleMeshes[mesh->name] == false) continue;
-			if ((dynamic_cast<transparent_pbr*>(renderer.materials[mesh->materialIndex]) == nullptr) == transparentPass)
+			auto& m = renderer.m->meshes[i];
+			if (renderer.visibleMeshes[i] == false) continue;
+			if ((dynamic_cast<transparent_pbr*>(renderer.materials[m->materialIndex]) == nullptr) == transparentPass)
 			{
 				continue;
 			}
-			renderer.materials[mesh->materialIndex]->s->SetMatrix4("model", model, true);
-			renderer.materials[mesh->materialIndex]->Set(0);
-			mesh->Render(renderer.materials[mesh->materialIndex]->s);
+			if (renderer.materials[m->materialIndex]->s == nullptr) std::cout << "shader is NULL" << std::endl;
+			renderer.materials[m->materialIndex]->s->SetMatrix4("model", model, true);
+			renderer.materials[m->materialIndex]->Set(0);
+			renderer.materials[m->materialIndex]->s->Use();
+			glBindVertexArray(m->VAO);
+			glDrawElements(GL_TRIANGLES, m->indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
 		}
 	}
 	float endTime = glfwGetTime();

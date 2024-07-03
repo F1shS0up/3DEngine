@@ -1,7 +1,7 @@
 #version 460 core
 out vec4 FragColor;
 
-struct MaterialValues
+struct Material
 {
 	vec3 diffuse;
 	vec3 specular;
@@ -35,13 +35,10 @@ const float linear = 0.09;
 const float quadratic = 0.032;
 
 uniform vec3 viewPos;
+uniform Material material;
 layout(std430, binding = 0) buffer Lights
 {
 	Light lights[];
-};
-layout(std430, binding = 1) buffer Materials
-{
-	MaterialValues materialValues[];
 };
 
 layout(binding = 0) uniform sampler2D shadowMap;
@@ -106,11 +103,11 @@ vec3 CalcDirLight(Light light, vec3 normal, vec3 viewDir)
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), materialValues[fs_in.materialIndex].shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	// combine results
 	vec3 ambient = light.ambient;
-	vec3 diffuse = light.diffuse * diff * materialValues[fs_in.materialIndex].diffuse;
-	vec3 specular = light.specular * spec * materialValues[fs_in.materialIndex].specular;
+	vec3 diffuse = light.diffuse * diff * material.diffuse;
+	vec3 specular = light.specular * spec * material.specular;
 
 	float shadow = DirectionalShadowCalculation(normal, lightDir);
 	vec3 lighting = vec3(ambient + (1.0 - shadow) * (diffuse + specular));
@@ -124,14 +121,14 @@ vec3 CalcPointLight(Light light, vec3 normal, vec3 viewDir, int index)
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular shading
 	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), materialValues[fs_in.materialIndex].shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	// attenuation
 	float d = length(light.positionOrDirection - fs_in.WorldPos);
 	float attenuation = 1.0 / (constant + linear * d + quadratic * (d * d));
 	// combine results
 	vec3 ambient = light.ambient;
-	vec3 diffuse = light.diffuse * diff * materialValues[fs_in.materialIndex].diffuse;
-	vec3 specular = light.specular * spec * materialValues[fs_in.materialIndex].specular;
+	vec3 diffuse = light.diffuse * diff * material.diffuse;
+	vec3 specular = light.specular * spec * material.specular;
 	ambient *= attenuation;
 	diffuse *= attenuation;
 	specular *= attenuation;

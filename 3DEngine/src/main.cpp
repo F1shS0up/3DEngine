@@ -33,6 +33,7 @@ int main(int argc, char* argv[])
 		{
 			time = 0;
 			std::cout << 1.f / deltaTime << std::endl;
+			std::cout << "---------------------------------------" << std::endl;
 		}
 	}
 	e->Terminate();
